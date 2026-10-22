@@ -1,0 +1,4 @@
+experta==1.9.4
+frozendict==1.2
+streamlit>=1.42
+pytest>=8
