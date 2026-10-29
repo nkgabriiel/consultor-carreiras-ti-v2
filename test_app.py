@@ -51,3 +51,28 @@ def test_aba_base_de_conhecimento_renderiza():
     at = AppTest.from_file("app.py", default_timeout=30).run()
     assert not at.exception
     assert len(at.dataframe) >= 2
+
+
+def _ate_o_plano(at):
+    _avancar(at)  # perfil -> afinidades
+    _avancar(at)  # afinidades -> objetivos
+    _avancar(at)  # objetivos -> resultado
+    _botao(at, "Gerar plano de ação").click()
+    at.run()
+
+
+def test_plano_muda_conforme_o_nivel_alvo():
+    at = AppTest.from_file("app.py", default_timeout=30).run()
+    _ate_o_plano(at)
+    assert not at.exception
+    junior_habilidades = {s.key for s in at.select_slider if s.key.startswith("hab_")}
+
+    at.radio(key="nivel_alvo").set_value("senior").run()
+    assert not at.exception
+    assert any(m.label == "Prontidão para Sênior" for m in at.metric)
+    senior_habilidades = {s.key for s in at.select_slider if s.key.startswith("hab_")}
+    assert junior_habilidades < senior_habilidades  # Sênior exige tudo do Júnior e mais
+    assert any("experiência prática" in c.value for c in at.caption)
+
+    at.radio(key="nivel_alvo").set_value("pleno").run()
+    assert any(m.label == "Prontidão para Pleno" for m in at.metric)

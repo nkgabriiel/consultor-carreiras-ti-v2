@@ -11,6 +11,9 @@ from pathlib import Path
 
 CAMINHO_PADRAO = Path(__file__).with_name("regras_carreiras.json")
 OPERADORES = ("<=", ">=", "==", "<", ">")
+NIVEIS_CARREIRA = ("junior", "pleno", "senior")
+NIVEIS_CERTIFICACAO = ("inicial", "intermediario", "avancado")
+NIVEIS_PROJETO = ("basico", "intermediario", "avancado")
 
 
 class BaseInvalida(ValueError):
@@ -35,11 +38,13 @@ def base_padrao() -> dict:
 def validar_base(base: dict) -> None:
     erros = []
     for secao in ("escala_likert", "classificacao", "perfil", "perguntas", "trilhas",
-                  "regras_combinadas", "habilidades", "niveis_conhecimento", "roadmap"):
+                  "regras_combinadas", "habilidades", "niveis_conhecimento", "niveis_carreira", "roadmap"):
         if secao not in base:
             erros.append(f"seção ausente: {secao}")
     if erros:
         raise BaseInvalida("; ".join(erros))
+    if list(base["niveis_carreira"]) != list(NIVEIS_CARREIRA):
+        raise BaseInvalida(f"niveis_carreira deve ser exatamente {list(NIVEIS_CARREIRA)}, em ordem crescente")
 
     ids_perguntas = [p["id"] for p in base["perguntas"]]
     if len(set(ids_perguntas)) != len(ids_perguntas):
@@ -84,19 +89,42 @@ def validar_base(base: dict) -> None:
             erros.append(f"roadmap ausente para a trilha {chave}")
             continue
         rm = base["roadmap"][chave]
-        for item in rm["junior"]:
-            if item["habilidade"] not in base["habilidades"]:
-                erros.append(f"roadmap {chave}: habilidade inexistente {item['habilidade']!r}")
-            if str(item["nivel"]) not in base["niveis_conhecimento"]:
-                erros.append(f"roadmap {chave}: nível inválido em {item['habilidade']!r}")
-        if not rm["certificacoes"] or not rm["projetos"]:
-            erros.append(f"roadmap {chave}: faltam certificações ou projetos")
+        for nivel in base["niveis_carreira"]:
+            itens = rm.get(nivel)
+            if not itens:
+                erros.append(f"roadmap {chave}: sem requisitos para {nivel}")
+                continue
+            vistas = [i["habilidade"] for i in itens]
+            if len(set(vistas)) != len(vistas):
+                erros.append(f"roadmap {chave}/{nivel}: habilidade repetida")
+            prioridades = [i["prioridade"] for i in itens]
+            if len(set(prioridades)) != len(prioridades):
+                erros.append(f"roadmap {chave}/{nivel}: prioridade repetida")
+            for item in itens:
+                if item["habilidade"] not in base["habilidades"]:
+                    erros.append(f"roadmap {chave}: habilidade inexistente {item['habilidade']!r}")
+                if str(item["nivel"]) not in base["niveis_conhecimento"]:
+                    erros.append(f"roadmap {chave}/{nivel}: nível inválido em {item['habilidade']!r}")
+        for cert in rm["certificacoes"]:
+            if cert["nivel"] not in NIVEIS_CERTIFICACAO:
+                erros.append(f"roadmap {chave}: nível de certificação inválido {cert['nivel']!r}")
         for proj in rm["projetos"]:
-            if proj["nivel"] not in ("basico", "intermediario"):
+            if proj["nivel"] not in NIVEIS_PROJETO:
                 erros.append(f"roadmap {chave}: nível de projeto inválido {proj['nivel']!r}")
+        for nivel, dados in base["niveis_carreira"].items():
+            if not any(c["nivel"] in dados["certificacoes"] for c in rm["certificacoes"]):
+                erros.append(f"roadmap {chave}: nenhuma certificação para {nivel}")
+            if not any(p["nivel"] in dados["projetos"] for p in rm["projetos"]):
+                erros.append(f"roadmap {chave}: nenhum projeto para {nivel}")
+
+    for nivel, dados in base["niveis_carreira"].items():
+        if not set(dados["certificacoes"]) <= set(NIVEIS_CERTIFICACAO):
+            erros.append(f"nível de carreira {nivel}: certificações inválidas")
+        if not set(dados["projetos"]) <= set(NIVEIS_PROJETO):
+            erros.append(f"nível de carreira {nivel}: projetos inválidos")
 
     for exp, dados in base["perfil"]["experiencia"].items():
-        if dados["projetos"] not in ("basico", "intermediario"):
+        if dados["projetos"] not in NIVEIS_PROJETO:
             erros.append(f"experiência {exp}: nível de projeto inválido")
 
     if erros:

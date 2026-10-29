@@ -11,9 +11,10 @@ import streamlit as st
 
 from base_conhecimento import base_padrao
 from engine import calcular_ranking, explicar_empate, justificar, matriz_pesos
-from roadmap import gerar_roadmap, habilidades_da_trilha, roadmap_para_markdown
+from roadmap import gerar_roadmap, habilidades_da_trilha, prontidao_por_nivel, roadmap_para_markdown
 
 BASE = base_padrao()
+NIVEIS_CARREIRA = BASE["niveis_carreira"]
 ETAPAS = ["Perfil pessoal", "Afinidades técnicas", "Objetivos de carreira", "Resultado", "Plano de ação"]
 LIKERT = BASE["escala_likert"]
 ROTULOS_LIKERT = {int(k): v for k, v in LIKERT["rotulos"].items()}
@@ -172,36 +173,51 @@ def etapa_plano():
     if trilha is None:
         ir_para(3)
     st.subheader("Passo 5 de 5: gaps e plano de ação")
-    st.write(f"Trilha escolhida: **{BASE['trilhas'][trilha]['nome']}**. Marque seu nível atual em cada "
-             "habilidade exigida de um(a) Júnior; o plano se atualiza na hora.")
+    st.write(f"Trilha escolhida: **{BASE['trilhas'][trilha]['nome']}**. Escolha o nível que você quer "
+             "alcançar e marque seu nível atual em cada habilidade exigida; o plano se atualiza na hora.")
 
-    exigidas = habilidades_da_trilha(trilha)
-    conhecimento = {}
+    nivel = st.radio("Nível-alvo", options=list(NIVEIS_CARREIRA), horizontal=True, key="nivel_alvo",
+                     format_func=lambda n: f"{NIVEIS_CARREIRA[n]['rotulo']} ({NIVEIS_CARREIRA[n]['experiencia_tipica']})")
+    st.caption(NIVEIS_CARREIRA[nivel]["descricao"])
+    rotulo = NIVEIS_CARREIRA[nivel]["rotulo"]
+
+    exigidas = habilidades_da_trilha(trilha, nivel)
     colunas = st.columns(2)
     for i, h in enumerate(exigidas):
-        conhecimento[h["id"]] = colunas[i % 2].select_slider(
-            f"{h['nome']} (Júnior = nível {h['requerido']})", options=list(NIVEIS),
+        ss.conhecimento[h["id"]] = colunas[i % 2].select_slider(
+            f"{h['nome']} ({rotulo} = nível {h['requerido']})", options=list(NIVEIS),
             value=ss.conhecimento.get(h["id"], 0), key=f"hab_{trilha}_{h['id']}",
-            format_func=lambda v: f"{v} - {NIVEIS[v]}")
-        ss.conhecimento[h["id"]] = conhecimento[h["id"]]
+            format_func=lambda v: f"{v} - {NIVEIS[v]}",
+            help=f"Exigido desde o nível {NIVEIS_CARREIRA[h['desde']]['rotulo']}.")
 
     perfil = ss.perfil
-    rm = gerar_roadmap(trilha, conhecimento, perfil["experiencia"], perfil["horas"])
+    rm = gerar_roadmap(trilha, ss.conhecimento, perfil["experiencia"], perfil["horas"], nivel)
 
     st.divider()
     m1, m2, m3, m4 = st.columns(4)
-    m1.metric("Prontidão para Júnior", f"{rm.prontidao_pct:.0f}%")
+    m1.metric(f"Prontidão para {rotulo}", f"{rm.prontidao_pct:.0f}%")
     m2.metric("Habilidades com lacuna", f"{len(rm.gaps)} de {len(rm.gaps) + len(rm.atingidas)}")
-    m3.metric("Esforço estimado", f"{rm.horas_totais} h")
-    m4.metric("Prazo estimado", f"{rm.semanas} sem.", help=f"Estudando {perfil['horas']} h por semana.")
+    m3.metric("Esforço de estudo", f"{rm.horas_totais} h")
+    m4.metric("Prazo de estudo", f"{rm.semanas} sem.", help=f"Estudando {perfil['horas']} h por semana.")
     st.progress(min(1.0, rm.prontidao_pct / 100))
+    if nivel != "junior":
+        st.caption(f"Essas horas cobrem só o estudo: chegar a {rotulo} também exige experiência prática, "
+                   f"em geral {rm.experiencia_tipica}.")
+
+    with st.expander("Sua trajetória: prontidão em cada nível"):
+        pront = prontidao_por_nivel(trilha, ss.conhecimento)
+        for n, pct in pront.items():
+            st.progress(min(1.0, pct / 100), text=f"{NIVEIS_CARREIRA[n]['rotulo']}: {pct:.0f}%")
+        st.caption("Habilidades que você ainda não avaliou (as de níveis acima do selecionado) contam como 0.")
 
     if not rm.gaps:
-        st.success("Você já atende todos os requisitos de Júnior desta trilha. Foque no portfólio e nas certificações.")
+        st.success(f"Você já atende todos os requisitos de {rotulo} desta trilha. "
+                   "Foque no portfólio e nas certificações.")
     for titulo, gaps in rm.fases:
         st.markdown(f"#### {titulo}")
         st.dataframe(
-            [{"Habilidade": g.nome, "Seu nível": g.atual, "Nível Júnior": g.requerido, "O que estudar": g.estudar}
+            [{"Habilidade": g.nome, "Seu nível": g.atual, f"Nível {rotulo}": g.requerido,
+              "Exigido desde": NIVEIS_CARREIRA[g.desde]["rotulo"], "O que estudar": g.estudar}
              for g in gaps], hide_index=True, width="stretch")
     if rm.atingidas:
         st.caption("Já atingido: " + ", ".join(g.nome for g in rm.atingidas))
@@ -221,7 +237,7 @@ def etapa_plano():
     if voltar.button("Voltar ao resultado"):
         ir_para(3)
     baixar.download_button("Baixar plano (Markdown)", roadmap_para_markdown(rm, perfil["nome"]),
-                           file_name=f"plano_{trilha}.md", mime="text/markdown")
+                           file_name=f"plano_{trilha}_{nivel}.md", mime="text/markdown")
     if refazer.button("Refazer o teste"):
         reiniciar()
 

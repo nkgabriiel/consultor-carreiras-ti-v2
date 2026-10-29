@@ -1,7 +1,8 @@
 import pytest
 
 from base_conhecimento import base_padrao
-from roadmap import analisar_gaps, gerar_roadmap, habilidades_da_trilha
+from roadmap import (analisar_gaps, gerar_roadmap, habilidades_da_trilha, prontidao_por_nivel,
+                     roadmap_para_markdown)
 
 BASE = base_padrao()
 
@@ -95,3 +96,109 @@ def test_entradas_invalidas():
         gerar_roadmap("backend", {}, horas_semana=0)
     with pytest.raises(ValueError):
         gerar_roadmap("backend", {}, experiencia="lenda")
+
+
+# --- Níveis de carreira: Júnior, Pleno e Sênior ---------------------------------------
+NIVEIS = list(BASE["niveis_carreira"])
+
+
+def conhecimento_de(trilha, nivel):
+    """Quem tem exatamente o que se exige no nível informado (nem mais, nem menos)."""
+    return {h["id"]: h["requerido"] for h in habilidades_da_trilha(trilha, nivel)}
+
+
+def test_tres_niveis_em_ordem():
+    assert NIVEIS == ["junior", "pleno", "senior"]
+
+
+@pytest.mark.parametrize("trilha", list(BASE["trilhas"]))
+def test_requisitos_sao_cumulativos(trilha):
+    """Pleno exige tudo de Júnior (no mesmo nível ou maior), e Sênior tudo de Pleno."""
+    anterior = {}
+    for nivel in NIVEIS:
+        atual = {h["id"]: h["requerido"] for h in habilidades_da_trilha(trilha, nivel)}
+        for hid, req in anterior.items():
+            assert hid in atual and atual[hid] >= req, f"{trilha}/{nivel}: {hid} regrediu"
+        assert len(atual) > len(anterior) or any(atual[h] > anterior[h] for h in anterior), \
+            f"{trilha}/{nivel} não exige nada além do nível anterior"
+        anterior = atual
+
+
+@pytest.mark.parametrize("trilha", list(BASE["trilhas"]))
+def test_prontidao_cai_ao_subir_de_nivel(trilha):
+    pronto_junior = conhecimento_de(trilha, "junior")
+    pront = prontidao_por_nivel(trilha, pronto_junior)
+    assert pront["junior"] == 100
+    assert pront["pleno"] < 100
+    assert pront["senior"] < pront["pleno"]
+
+
+@pytest.mark.parametrize("trilha", list(BASE["trilhas"]))
+def test_dominar_tudo_atende_todos_os_niveis(trilha):
+    tudo = {h: 3 for h in BASE["habilidades"]}
+    assert set(prontidao_por_nivel(trilha, tudo).values()) == {100.0}
+    assert gerar_roadmap(trilha, tudo, nivel="senior").gaps == []
+
+
+def test_esforco_cresce_com_o_nivel_alvo():
+    horas = [gerar_roadmap("devops", {}, nivel=n).horas_totais for n in NIVEIS]
+    assert horas == sorted(horas) and len(set(horas)) == 3
+
+
+def test_quem_ja_e_junior_so_estuda_o_que_falta_para_pleno():
+    conhecimento = conhecimento_de("backend", "junior")
+    rm = gerar_roadmap("backend", conhecimento, nivel="pleno")
+    assert rm.gaps and all(g.lacuna > 0 for g in rm.gaps)
+    ids_junior = {h["id"]: h["requerido"] for h in habilidades_da_trilha("backend", "junior")}
+    for g in rm.gaps:
+        # ou é habilidade nova do Pleno, ou o JSON elevou o nível exigido
+        assert g.desde == "pleno" or g.requerido > ids_junior[g.habilidade]
+
+
+def test_habilidade_registra_o_nivel_em_que_passa_a_ser_exigida():
+    por_id = {h["id"]: h for h in habilidades_da_trilha("backend", "senior")}
+    assert por_id["git"]["desde"] == "junior"
+    assert por_id["arquitetura"]["desde"] == "pleno"
+    assert por_id["lideranca_tecnica"]["desde"] == "senior"
+
+
+def test_ordem_de_estudo_prioriza_o_nivel_mais_basico():
+    desde = [h["desde"] for h in habilidades_da_trilha("cloud", "senior")]
+    indices = [NIVEIS.index(d) for d in desde]
+    assert indices == sorted(indices)
+    prioridades = [h["prioridade"] for h in habilidades_da_trilha("cloud", "senior")]
+    assert prioridades == list(range(1, len(prioridades) + 1))
+
+
+@pytest.mark.parametrize("trilha", list(BASE["trilhas"]))
+@pytest.mark.parametrize("nivel", NIVEIS)
+def test_certificacoes_e_projetos_em_todo_nivel(trilha, nivel):
+    rm = gerar_roadmap(trilha, {}, nivel=nivel)
+    permitido = BASE["niveis_carreira"][nivel]
+    assert rm.certificacoes and rm.projetos
+    assert all(c["nivel"] in permitido["certificacoes"] for c in rm.certificacoes)
+    assert all(p["nivel"] in permitido["projetos"] for p in rm.projetos)
+
+
+def test_senior_so_recebe_certificacoes_e_projetos_avancados():
+    rm = gerar_roadmap("produto", {}, nivel="senior")
+    assert {c["nivel"] for c in rm.certificacoes} == {"avancado"}
+    assert {p["nivel"] for p in rm.projetos} == {"avancado"}
+
+
+def test_nivel_padrao_continua_sendo_junior():
+    assert gerar_roadmap("qa", {}) == gerar_roadmap("qa", {}, nivel="junior")
+
+
+def test_markdown_informa_nivel_e_alerta_sobre_experiencia():
+    md = roadmap_para_markdown(gerar_roadmap("backend", {}, nivel="senior"))
+    assert "(Sênior)" in md and "5 anos ou mais" in md and "experiência prática" in md
+    assert "experiência prática" not in roadmap_para_markdown(gerar_roadmap("backend", {}, nivel="junior"))
+
+
+def test_nivel_de_carreira_invalido_e_rejeitado():
+    for chamada in (lambda: gerar_roadmap("backend", {}, nivel="estagiario"),
+                    lambda: habilidades_da_trilha("backend", "staff"),
+                    lambda: analisar_gaps("backend", {}, "master")):
+        with pytest.raises(ValueError, match="Nível desconhecido"):
+            chamada()

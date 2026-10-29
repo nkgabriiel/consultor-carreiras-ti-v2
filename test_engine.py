@@ -189,3 +189,21 @@ def test_respostas_faltando_ou_desconhecidas_sao_rejeitadas():
     extra["curiosidade"] = 3
     with pytest.raises(RespostasInvalidas, match="desconhecida"):
         calcular_ranking(extra)
+
+
+# --- Validação dos níveis de carreira --------------------------------------------------
+@pytest.mark.parametrize("mutacao, trecho", [
+    (lambda b: b["roadmap"]["qa"].pop("senior"), "sem requisitos para senior"),
+    (lambda b: b["roadmap"]["qa"]["pleno"].append(dict(b["roadmap"]["qa"]["pleno"][0])), "repetida"),
+    (lambda b: b["roadmap"]["qa"]["senior"].append({"habilidade": "fantasma", "nivel": 1, "prioridade": 99}), "habilidade inexistente"),
+    (lambda b: b["roadmap"]["qa"].update(certificacoes=[c for c in b["roadmap"]["qa"]["certificacoes"] if c["nivel"] != "avancado"]), "nenhuma certificação para senior"),
+    (lambda b: b["roadmap"]["qa"].update(projetos=[p for p in b["roadmap"]["qa"]["projetos"] if p["nivel"] != "avancado"]), "nenhum projeto para senior"),
+    (lambda b: b["roadmap"]["qa"]["certificacoes"].append({"nome": "x", "nivel": "mestre"}), "nível de certificação inválido"),
+    (lambda b: b.update(niveis_carreira={k: b["niveis_carreira"][k] for k in ("pleno", "junior", "senior")}), "em ordem crescente"),
+    (lambda b: b.pop("niveis_carreira"), "seção ausente"),
+])
+def test_base_com_niveis_inconsistentes_e_rejeitada(mutacao, trecho):
+    ruim = copy.deepcopy(BASE)
+    mutacao(ruim)
+    with pytest.raises(BaseInvalida, match=trecho):
+        validar_base(ruim)

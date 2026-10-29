@@ -3,8 +3,8 @@
 Evolução do [consultor de carreiras da Etapa 1](https://github.com/nkgabriiel/consultor-carreiras-ti):
 um sistema especialista com **pontuação ponderada e tratamento de incerteza**, em Python + Streamlit.
 Em vez de recomendar uma única trilha por regras SE-ENTÃO, ele lê respostas graduais (escala 1 a 5),
-calcula a **compatibilidade percentual** com 10 trilhas, aponta as **lacunas de competência** para o nível
-Júnior e gera um **roadmap personalizado** (o que estudar, certificações e projetos de portfólio).
+calcula a **compatibilidade percentual** com 10 trilhas, aponta as **lacunas de competência** para os níveis
+Júnior, Pleno e Sênior e gera um **roadmap personalizado** (o que estudar, certificações e projetos de portfólio).
 
 Trabalho da disciplina de Inteligência Artificial, Ciência da Computação, UNIPAC Barbacena.
 
@@ -28,7 +28,7 @@ Validação:
 
 ```bash
 python personas.py     # tabela com esperado x obtido
-pytest -q              # 72 testes (motor, roadmap, casos limite e fluxo da interface)
+pytest -q              # 150 testes (motor, roadmap por nível, casos limite e fluxo da interface)
 ```
 
 ### Windows (PowerShell), sem ativar o venv
@@ -90,19 +90,32 @@ depois a ordem das trilhas no JSON.
 - *empate parcial*: lista as trilhas dentro de 5 pp da primeira e quais respostas puxam as duas para cima;
 - *inconclusivo*: nenhuma trilha passa de 25% (respostas pouco informativas ou contraditórias).
 
-**Gaps e roadmap.** Cada trilha define as habilidades exigidas de um Júnior, com nível alvo (0 a 3) e
-prioridade. O usuário informa seu nível atual e o sistema calcula a lacuna de cada habilidade, a prontidão
-para Júnior (%), as horas estimadas (a partir de `horas_por_nivel`, ajustadas pela experiência) e o prazo
-em semanas segundo as horas de estudo por semana. O plano separa o que nunca foi estudado do que precisa de
-reforço e sugere certificações e projetos para o GitHub. Quem já tem experiência vê primeiro os projetos
-intermediários. O plano pode ser baixado em Markdown.
+**Gaps e roadmap.** Cada trilha define, no JSON, as habilidades exigidas em três níveis de carreira, com
+nível alvo (0 a 3) e prioridade: **Júnior**, **Pleno** e **Sênior**. O usuário escolhe o nível que quer
+alcançar e informa seu nível atual em cada habilidade; o sistema calcula a lacuna de cada uma, a prontidão
+para o nível-alvo (%), as horas estimadas (a partir de `horas_por_nivel`, ajustadas pela experiência) e o
+prazo em semanas segundo as horas de estudo por semana. O plano separa o que nunca foi estudado do que
+precisa de reforço e sugere certificações e projetos para o GitHub. O plano pode ser baixado em Markdown.
+
+**Níveis de carreira (Júnior, Pleno, Sênior).** Os requisitos são **cumulativos**: o Pleno exige tudo do
+Júnior (e o JSON pode elevar o nível exigido de uma habilidade) mais habilidades novas, e o Sênior faz o mesmo
+sobre o Pleno. Exemplo em Back-end: Git e lógica já no Júnior; Arquitetura de sistemas e CI/CD a partir do
+Pleno; Liderança técnica e visão de negócio a partir do Sênior. Cada habilidade mostra desde qual nível é
+exigida, e a ordem de estudo sempre começa pelo que é mais básico.
+
+- *Certificações e projetos por nível:* Júnior vê os níveis inicial e intermediário; Pleno, intermediário e
+  avançado; Sênior, só avançado (ex.: AWS Solutions Architect Professional, CISSP, plataforma de microsserviços
+  com observabilidade, programa de SRE com SLOs). Os níveis de cada fase estão em `niveis_carreira`.
+- *Trajetória:* a interface mostra a prontidão do usuário nos três níveis ao mesmo tempo.
+- *Limite das horas:* para Pleno e Sênior as horas cobrem só o estudo. O plano avisa que esses níveis
+  também exigem experiência prática (em geral 2 a 5 anos e 5 anos ou mais, respectivamente).
 
 ## Interface (Streamlit)
 
 Wizard em 5 etapas: **1** Perfil pessoal, **2** Afinidades técnicas, **3** Objetivos de carreira,
 **4** Resultado (Top 3 com percentuais, radar, barras, tabela e justificativa por trilha) e
-**5** Plano de ação (autoavaliação das habilidades, métricas de prontidão, fases de estudo, certificações e
-projetos). A aba "Base de conhecimento" mostra a matriz de pesos (Pandas) e as regras combinadas lidas do JSON.
+**5** Plano de ação (seletor de nível-alvo Júnior/Pleno/Sênior, autoavaliação das habilidades, métricas de
+prontidão, trajetória pelos três níveis, fases de estudo, certificações e projetos). A aba "Base de conhecimento" mostra a matriz de pesos (Pandas) e as regras combinadas lidas do JSON.
 
 ## Alterando o conhecimento sem mexer no código
 
@@ -118,7 +131,10 @@ nenhuma trilha ou pergunta fica fixa no código do motor.
 - **Marina** (gosta de dados e de web): Ciência de Dados 90% e Front-end 85% ficam juntas no topo, com
   confiança baixa e explicação do empate. **Rafael** (infra + nuvem + automação): Cloud 82% e DevOps 79%.
 - Entradas inválidas (valor fora de 1 a 5, tipo errado, pergunta faltando ou desconhecida) levantam erro claro.
-- Base de conhecimento corrompida é recusada na carga.
+- Base de conhecimento corrompida é recusada na carga, inclusive roadmap sem requisitos para algum nível,
+  habilidade repetida ou nível sem certificação e projeto.
+- Níveis de carreira: os requisitos nunca regridem de Júnior para Sênior, a prontidão cai ao subir de nível,
+  quem domina tudo atinge 100% nos três, e o nível-alvo inválido levanta erro claro.
 
 ## Limitações conhecidas
 

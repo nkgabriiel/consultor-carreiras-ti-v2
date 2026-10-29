@@ -1,24 +1,8 @@
 {
-  "versao": "2.0",
+  "versao": "2.1",
   "descricao": "Base de conhecimento do Consultor Avançado de Carreiras em TI. O motor (engine.py) não contém nenhuma regra: pesos, penalidades, sinergias, habilidades e roadmaps estão todos neste arquivo.",
-
-  "escala_likert": {
-    "min": 1,
-    "max": 5,
-    "rotulos": {
-      "1": "Nenhuma",
-      "2": "Pouca",
-      "3": "Moderada",
-      "4": "Muita",
-      "5": "Total"
-    }
-  },
-
-  "classificacao": {
-    "limiar_inconclusivo_pct": 25,
-    "limiar_empate_parcial_pp": 5
-  },
-
+  "escala_likert": {"min": 1, "max": 5, "rotulos": {"1": "Nenhuma", "2": "Pouca", "3": "Moderada", "4": "Muita", "5": "Total"}},
+  "classificacao": {"limiar_inconclusivo_pct": 25, "limiar_empate_parcial_pp": 5},
   "perfil": {
     "experiencia": {
       "iniciante": {"rotulo": "Estou começando agora, sem projetos", "fator_tempo": 1.3, "projetos": "basico"},
@@ -29,7 +13,6 @@
     "horas_semana": [3, 5, 10, 15, 20],
     "horas_por_nivel": {"0": 0, "1": 30, "2": 45, "3": 60}
   },
-
   "perguntas": [
     {"id": "matematica", "etapa": "afinidades", "texto": "Qual a sua afinidade com matemática, estatística e probabilidade?"},
     {"id": "logica", "etapa": "afinidades", "texto": "Você gosta de resolver problemas de lógica e de pensar em algoritmos?"},
@@ -45,7 +28,6 @@
     {"id": "testes", "etapa": "afinidades", "texto": "Você é detalhista e gosta de testar software e caçar defeitos?"},
     {"id": "comunicacao", "etapa": "afinidades", "texto": "Você gosta de conversar com clientes e áreas de negócio para entender necessidades?"},
     {"id": "gestao", "etapa": "afinidades", "texto": "Você gosta de priorizar, organizar o trabalho de um time e tomar decisões de produto?"},
-
     {"id": "obj_lideranca", "etapa": "objetivos", "texto": "Quero, no longo prazo, liderar times e participar de decisões estratégicas."},
     {"id": "obj_pesquisa", "etapa": "objetivos", "texto": "Gosto de pesquisa, experimentação e de estudar conceitos teóricos a fundo."},
     {"id": "obj_escala", "etapa": "objetivos", "texto": "Quero projetar sistemas que atendam milhões de acessos com alta disponibilidade."},
@@ -54,7 +36,6 @@
     {"id": "obj_qualidade", "etapa": "objetivos", "texto": "Me realizo garantindo que o software seja confiável e não quebre."},
     {"id": "obj_investigacao", "etapa": "objetivos", "texto": "Gosto de pensar como um atacante e investigar falhas em sistemas."}
   ],
-
   "trilhas": {
     "backend": {
       "nome": "Desenvolvimento Back-end",
@@ -79,12 +60,38 @@
     "ciberseguranca": {
       "nome": "Cibersegurança (Security / Pentesting)",
       "descricao": "Defesa cibernética, análise de vulnerabilidades, criptografia e redes seguras.",
-      "pesos": {"matematica": 1, "logica": 2, "codigo": 2, "infra": 3, "seguranca": 5, "automacao": 1, "nuvem": 1, "testes": 1, "obj_incidentes": 3, "obj_investigacao": 5, "obj_pesquisa": 2, "obj_usuario": -1}
+      "pesos": {
+        "matematica": 1,
+        "logica": 2,
+        "codigo": 2,
+        "infra": 3,
+        "seguranca": 5,
+        "automacao": 1,
+        "nuvem": 1,
+        "testes": 1,
+        "obj_incidentes": 3,
+        "obj_investigacao": 5,
+        "obj_pesquisa": 2,
+        "obj_usuario": -1
+      }
     },
     "devops": {
       "nome": "DevOps & SRE",
       "descricao": "Automação de processos, integração e entrega contínua (CI/CD) e contêineres.",
-      "pesos": {"logica": 2, "codigo": 2, "design": -1, "infra": 5, "seguranca": 1, "automacao": 5, "nuvem": 3, "testes": 1, "obj_escala": 3, "obj_incidentes": 5, "obj_qualidade": 1, "obj_usuario": -1}
+      "pesos": {
+        "logica": 2,
+        "codigo": 2,
+        "design": -1,
+        "infra": 5,
+        "seguranca": 1,
+        "automacao": 5,
+        "nuvem": 3,
+        "testes": 1,
+        "obj_escala": 3,
+        "obj_incidentes": 5,
+        "obj_qualidade": 1,
+        "obj_usuario": -1
+      }
     },
     "cloud": {
       "nome": "Computação em Nuvem (Cloud Architecture)",
@@ -107,53 +114,89 @@
       "pesos": {"logica": -1, "codigo": -2, "design": 2, "infra": -1, "dados": 1, "comunicacao": 5, "gestao": 5, "obj_lideranca": 5, "obj_usuario": 3}
     }
   },
-
   "regras_combinadas": [
-    {"id": "P01", "tipo": "penalidade", "se": [["codigo", "<=", 2]], "ajustes": {"backend": -25, "frontend": -20, "mobile": -20, "eng_dados": -10, "ciencia_dados": -8},
-     "motivo": "Pouco gosto por escrever código conflita com trilhas centradas em desenvolvimento"},
-    {"id": "P02", "tipo": "penalidade", "se": [["matematica", "<=", 2]], "ajustes": {"ciencia_dados": -25, "eng_dados": -5},
-     "motivo": "Ciência de Dados exige base sólida de matemática e estatística"},
-    {"id": "P03", "tipo": "penalidade", "se": [["design", "<=", 2]], "ajustes": {"frontend": -20, "mobile": -8},
-     "motivo": "Front-end e Mobile dependem de sensibilidade visual e de UX"},
-    {"id": "P04", "tipo": "penalidade", "se": [["infra", "<=", 2]], "ajustes": {"devops": -15, "cloud": -15},
-     "motivo": "DevOps e Cloud exigem conforto com servidores, redes e Linux"},
-    {"id": "P05", "tipo": "penalidade", "se": [["obj_incidentes", "<=", 1]], "ajustes": {"devops": -15, "ciberseguranca": -5},
-     "motivo": "SRE e resposta a incidentes envolvem plantão e trabalho sob pressão"},
-    {"id": "P06", "tipo": "penalidade", "se": [["comunicacao", "<=", 2], ["gestao", "<=", 2]], "ajustes": {"produto": -25},
-     "motivo": "Gestão de Produtos é uma função de comunicação e priorização"},
-    {"id": "P07", "tipo": "penalidade", "se": [["seguranca", "<=", 2]], "ajustes": {"ciberseguranca": -20},
-     "motivo": "Interesse baixo em segurança da informação"},
-    {"id": "P08", "tipo": "penalidade", "se": [["testes", "<=", 2]], "ajustes": {"qa": -20},
-     "motivo": "QA exige perfil detalhista e gosto por testar"},
-    {"id": "P09", "tipo": "penalidade", "se": [["mobile", "<=", 2]], "ajustes": {"mobile": -20},
-     "motivo": "Pouco interesse em aplicativos para celular"},
-    {"id": "P10", "tipo": "penalidade", "se": [["dados", "<=", 2]], "ajustes": {"ciencia_dados": -20, "eng_dados": -20},
-     "motivo": "Trilhas de dados exigem gosto por trabalhar com grandes volumes de dados"},
-    {"id": "P11", "tipo": "penalidade", "se": [["nuvem", "<=", 2]], "ajustes": {"cloud": -20},
-     "motivo": "Cloud Architecture gira em torno de provedores de nuvem"},
-
-    {"id": "S01", "tipo": "sinergia", "se": [["matematica", ">=", 4], ["dados", ">=", 4]], "ajustes": {"ciencia_dados": 8, "eng_dados": -4},
-     "motivo": "Matemática alta somada a dados aponta para Ciência de Dados, e não para engenharia de pipelines"},
-    {"id": "S02", "tipo": "sinergia", "se": [["dados", ">=", 4], ["bancos", ">=", 4], ["matematica", "<=", 3]], "ajustes": {"eng_dados": 8, "ciencia_dados": -4},
-     "motivo": "Dados e bancos com matemática moderada distingue Engenharia de Dados de Ciência de Dados"},
-    {"id": "S03", "tipo": "sinergia", "se": [["infra", ">=", 4], ["automacao", ">=", 4]], "ajustes": {"devops": 8},
-     "motivo": "Infraestrutura com automação é a base de DevOps/SRE"},
-    {"id": "S04", "tipo": "sinergia", "se": [["infra", ">=", 4], ["nuvem", ">=", 4]], "ajustes": {"cloud": 8},
-     "motivo": "Infraestrutura com interesse em nuvem aponta para Cloud Architecture"},
-    {"id": "S05", "tipo": "sinergia", "se": [["design", ">=", 4], ["codigo", ">=", 4]], "ajustes": {"frontend": 6},
-     "motivo": "Design somado a código é o perfil clássico de Front-end"},
-    {"id": "S06", "tipo": "sinergia", "se": [["gestao", ">=", 4], ["comunicacao", ">=", 4]], "ajustes": {"produto": 8},
-     "motivo": "Gestão somada à comunicação com negócio define o perfil de Produto"},
-    {"id": "S07", "tipo": "sinergia", "se": [["seguranca", ">=", 4], ["infra", ">=", 4]], "ajustes": {"ciberseguranca": 6},
-     "motivo": "Segurança com conhecimento de infraestrutura e redes fortalece a trilha de Cibersegurança"},
-    {"id": "S08", "tipo": "sinergia", "se": [["mobile", ">=", 4], ["codigo", ">=", 4]], "ajustes": {"mobile": 6},
-     "motivo": "Interesse em apps somado ao gosto por código aponta para Mobile"},
-    {"id": "S09", "tipo": "sinergia", "se": [["testes", ">=", 4], ["automacao", ">=", 4]], "ajustes": {"qa": 6},
-     "motivo": "Testes somados a automação são o perfil de QA moderno (SDET)"},
-    {"id": "S10", "tipo": "sinergia", "se": [["logica", ">=", 4], ["bancos", ">=", 4]], "ajustes": {"backend": 6},
-     "motivo": "Lógica forte com bancos de dados é o núcleo do Back-end"}
+    {
+      "id": "P01",
+      "tipo": "penalidade",
+      "se": [["codigo", "<=", 2]],
+      "ajustes": {"backend": -25, "frontend": -20, "mobile": -20, "eng_dados": -10, "ciencia_dados": -8},
+      "motivo": "Pouco gosto por escrever código conflita com trilhas centradas em desenvolvimento"
+    },
+    {
+      "id": "P02",
+      "tipo": "penalidade",
+      "se": [["matematica", "<=", 2]],
+      "ajustes": {"ciencia_dados": -25, "eng_dados": -5},
+      "motivo": "Ciência de Dados exige base sólida de matemática e estatística"
+    },
+    {"id": "P03", "tipo": "penalidade", "se": [["design", "<=", 2]], "ajustes": {"frontend": -20, "mobile": -8}, "motivo": "Front-end e Mobile dependem de sensibilidade visual e de UX"},
+    {"id": "P04", "tipo": "penalidade", "se": [["infra", "<=", 2]], "ajustes": {"devops": -15, "cloud": -15}, "motivo": "DevOps e Cloud exigem conforto com servidores, redes e Linux"},
+    {
+      "id": "P05",
+      "tipo": "penalidade",
+      "se": [["obj_incidentes", "<=", 1]],
+      "ajustes": {"devops": -15, "ciberseguranca": -5},
+      "motivo": "SRE e resposta a incidentes envolvem plantão e trabalho sob pressão"
+    },
+    {
+      "id": "P06",
+      "tipo": "penalidade",
+      "se": [["comunicacao", "<=", 2], ["gestao", "<=", 2]],
+      "ajustes": {"produto": -25},
+      "motivo": "Gestão de Produtos é uma função de comunicação e priorização"
+    },
+    {"id": "P07", "tipo": "penalidade", "se": [["seguranca", "<=", 2]], "ajustes": {"ciberseguranca": -20}, "motivo": "Interesse baixo em segurança da informação"},
+    {"id": "P08", "tipo": "penalidade", "se": [["testes", "<=", 2]], "ajustes": {"qa": -20}, "motivo": "QA exige perfil detalhista e gosto por testar"},
+    {"id": "P09", "tipo": "penalidade", "se": [["mobile", "<=", 2]], "ajustes": {"mobile": -20}, "motivo": "Pouco interesse em aplicativos para celular"},
+    {
+      "id": "P10",
+      "tipo": "penalidade",
+      "se": [["dados", "<=", 2]],
+      "ajustes": {"ciencia_dados": -20, "eng_dados": -20},
+      "motivo": "Trilhas de dados exigem gosto por trabalhar com grandes volumes de dados"
+    },
+    {"id": "P11", "tipo": "penalidade", "se": [["nuvem", "<=", 2]], "ajustes": {"cloud": -20}, "motivo": "Cloud Architecture gira em torno de provedores de nuvem"},
+    {
+      "id": "S01",
+      "tipo": "sinergia",
+      "se": [["matematica", ">=", 4], ["dados", ">=", 4]],
+      "ajustes": {"ciencia_dados": 8, "eng_dados": -4},
+      "motivo": "Matemática alta somada a dados aponta para Ciência de Dados, e não para engenharia de pipelines"
+    },
+    {
+      "id": "S02",
+      "tipo": "sinergia",
+      "se": [["dados", ">=", 4], ["bancos", ">=", 4], ["matematica", "<=", 3]],
+      "ajustes": {"eng_dados": 8, "ciencia_dados": -4},
+      "motivo": "Dados e bancos com matemática moderada distingue Engenharia de Dados de Ciência de Dados"
+    },
+    {"id": "S03", "tipo": "sinergia", "se": [["infra", ">=", 4], ["automacao", ">=", 4]], "ajustes": {"devops": 8}, "motivo": "Infraestrutura com automação é a base de DevOps/SRE"},
+    {
+      "id": "S04",
+      "tipo": "sinergia",
+      "se": [["infra", ">=", 4], ["nuvem", ">=", 4]],
+      "ajustes": {"cloud": 8},
+      "motivo": "Infraestrutura com interesse em nuvem aponta para Cloud Architecture"
+    },
+    {"id": "S05", "tipo": "sinergia", "se": [["design", ">=", 4], ["codigo", ">=", 4]], "ajustes": {"frontend": 6}, "motivo": "Design somado a código é o perfil clássico de Front-end"},
+    {
+      "id": "S06",
+      "tipo": "sinergia",
+      "se": [["gestao", ">=", 4], ["comunicacao", ">=", 4]],
+      "ajustes": {"produto": 8},
+      "motivo": "Gestão somada à comunicação com negócio define o perfil de Produto"
+    },
+    {
+      "id": "S07",
+      "tipo": "sinergia",
+      "se": [["seguranca", ">=", 4], ["infra", ">=", 4]],
+      "ajustes": {"ciberseguranca": 6},
+      "motivo": "Segurança com conhecimento de infraestrutura e redes fortalece a trilha de Cibersegurança"
+    },
+    {"id": "S08", "tipo": "sinergia", "se": [["mobile", ">=", 4], ["codigo", ">=", 4]], "ajustes": {"mobile": 6}, "motivo": "Interesse em apps somado ao gosto por código aponta para Mobile"},
+    {"id": "S09", "tipo": "sinergia", "se": [["testes", ">=", 4], ["automacao", ">=", 4]], "ajustes": {"qa": 6}, "motivo": "Testes somados a automação são o perfil de QA moderno (SDET)"},
+    {"id": "S10", "tipo": "sinergia", "se": [["logica", ">=", 4], ["bancos", ">=", 4]], "ajustes": {"backend": 6}, "motivo": "Lógica forte com bancos de dados é o núcleo do Back-end"}
   ],
-
   "habilidades": {
     "git": {"nome": "Git e GitHub", "estudar": "Commits, branches, pull requests e GitHub Flow."},
     "logica": {"nome": "Lógica de programação e estruturas de dados", "estudar": "Variáveis, laços, funções, listas, dicionários, pilhas, filas e complexidade básica."},
@@ -186,16 +229,27 @@
     "teste_auto": {"nome": "Automação de testes", "estudar": "Pytest, Selenium, Cypress ou Playwright e testes de API com Postman."},
     "agil": {"nome": "Metodologias ágeis (Scrum e Kanban)", "estudar": "Cerimônias do Scrum, backlog, user stories e critérios de aceite."},
     "produto_disc": {"nome": "Discovery de produto, priorização e métricas", "estudar": "Pesquisa com usuários, RICE/MoSCoW, roadmap de produto, OKRs e métricas AARRR."},
-    "comunicacao_doc": {"nome": "Comunicação e documentação técnica", "estudar": "Escrever README, especificações e apresentar decisões para públicos não técnicos."}
+    "comunicacao_doc": {"nome": "Comunicação e documentação técnica", "estudar": "Escrever README, especificações e apresentar decisões para públicos não técnicos."},
+    "lideranca_tecnica": {"nome": "Liderança técnica e mentoria", "estudar": "Code review, mentoria de pessoas menos experientes, ADRs (registros de decisão de arquitetura) e condução de discussões técnicas."},
+    "estrategia_negocio": {"nome": "Visão estratégica e de negócio", "estudar": "Traduzir objetivos de negócio em prioridades técnicas, avaliar custo e benefício e acompanhar OKRs."},
+    "mlops": {"nome": "MLOps e machine learning em produção", "estudar": "Versionamento de dados e modelos (MLflow), deploy de modelos, monitoramento de drift e pipelines de retreino."},
+    "ml_avancado": {"nome": "Machine Learning avançado e deep learning", "estudar": "Redes neurais com PyTorch, séries temporais, NLP, engenharia de features e interpretabilidade de modelos."},
+    "big_data": {"nome": "Processamento distribuído e streaming", "estudar": "Apache Spark, Kafka, processamento em lote e em tempo real, particionamento e custo de armazenamento."},
+    "dados_governanca": {"nome": "Governança, qualidade e arquitetura de dados", "estudar": "Catálogo de dados, linhagem, contratos de dados, LGPD e arquiteturas Lakehouse e Data Mesh."},
+    "appsec": {"nome": "Segurança de aplicações e arquitetura segura", "estudar": "Threat modeling (STRIDE), SAST/DAST no CI, gestão de segredos e desenho de arquitetura segura."},
+    "resposta_incidentes": {"nome": "Resposta a incidentes e forense digital", "estudar": "Playbooks de incidente, análise de logs e SIEM, forense, caça a ameaças (threat hunting) e post-mortem."},
+    "sre_praticas": {"nome": "Práticas de SRE: SLOs e gestão de incidentes", "estudar": "SLI/SLO, error budget, gestão de incidentes, post-mortem sem culpados, capacity planning e redução de toil."},
+    "kubernetes": {"nome": "Kubernetes", "estudar": "Pods, deployments, services, ingress, Helm, escalabilidade e operação de clusters."},
+    "finops": {"nome": "Governança e custos em nuvem (FinOps)", "estudar": "Tagueamento e orçamento, otimização de custos, políticas de governança, landing zone e conformidade."},
+    "mobile_arquitetura": {"nome": "Arquitetura e performance de apps mobile", "estudar": "Arquitetura modular, gerenciamento de estado, offline-first, sincronização e profiling de desempenho."},
+    "mobile_producao": {"nome": "Publicação e operação de apps mobile", "estudar": "Assinatura e publicação nas lojas, CI/CD mobile, feature flags, crash reporting e métricas de uso."},
+    "qa_estrategia": {"nome": "Estratégia de qualidade e testes não funcionais", "estudar": "Plano de qualidade, testes de performance (k6, JMeter), testes de segurança, métricas de qualidade e shift-left."},
+    "produto_estrategia": {"nome": "Estratégia de produto, métricas e experimentação", "estudar": "Visão e estratégia de produto, OKRs, testes A/B, análise de funil e retenção e decisões baseadas em dados."},
+    "gestao_stakeholders": {"nome": "Gestão de stakeholders e alinhamento de times", "estudar": "Negociação, gestão de expectativas, comunicação executiva e alinhamento entre negócio, design e engenharia."},
+    "performance_web": {"nome": "Performance e acessibilidade web", "estudar": "Core Web Vitals, carregamento e renderização, WCAG, leitores de tela e auditoria com Lighthouse."},
+    "arquitetura_front": {"nome": "Arquitetura front-end", "estudar": "Design system, monorepo, micro front-ends, estratégia de testes e gerenciamento de estado em escala."}
   },
-
-  "niveis_conhecimento": {
-    "0": "Nunca estudei",
-    "1": "Conheço o básico",
-    "2": "Uso com segurança",
-    "3": "Domino"
-  },
-
+  "niveis_conhecimento": {"0": "Nunca estudei", "1": "Conheço o básico", "2": "Uso com segurança", "3": "Domino"},
   "roadmap": {
     "backend": {
       "junior": [
@@ -207,15 +261,46 @@
         {"habilidade": "docker", "nivel": 1, "prioridade": 6},
         {"habilidade": "linux", "nivel": 1, "prioridade": 7}
       ],
+      "pleno": [
+        {"habilidade": "backend_lang", "nivel": 3, "prioridade": 1},
+        {"habilidade": "sql", "nivel": 3, "prioridade": 2},
+        {"habilidade": "apis", "nivel": 3, "prioridade": 3},
+        {"habilidade": "arquitetura", "nivel": 2, "prioridade": 4},
+        {"habilidade": "teste_auto", "nivel": 2, "prioridade": 5},
+        {"habilidade": "cicd", "nivel": 2, "prioridade": 6},
+        {"habilidade": "docker", "nivel": 2, "prioridade": 7},
+        {"habilidade": "observabilidade", "nivel": 1, "prioridade": 8},
+        {"habilidade": "seguranca_fund", "nivel": 1, "prioridade": 9}
+      ],
+      "senior": [
+        {"habilidade": "arquitetura", "nivel": 3, "prioridade": 1},
+        {"habilidade": "observabilidade", "nivel": 2, "prioridade": 2},
+        {"habilidade": "seguranca_fund", "nivel": 2, "prioridade": 3},
+        {"habilidade": "nuvem_fund", "nivel": 2, "prioridade": 4},
+        {"habilidade": "lideranca_tecnica", "nivel": 2, "prioridade": 5},
+        {"habilidade": "estrategia_negocio", "nivel": 1, "prioridade": 6}
+      ],
       "certificacoes": [
         {"nome": "Oracle Certified Foundations Associate (Java)", "nivel": "inicial"},
         {"nome": "Microsoft Azure Fundamentals (AZ-900)", "nivel": "inicial"},
-        {"nome": "AWS Certified Developer - Associate", "nivel": "intermediario"}
+        {"nome": "AWS Certified Developer - Associate", "nivel": "intermediario"},
+        {"nome": "AWS Certified Solutions Architect - Professional", "nivel": "avancado"},
+        {"nome": "Google Cloud Professional Cloud Architect", "nivel": "avancado"}
       ],
       "projetos": [
         {"titulo": "API REST de tarefas com autenticação", "descricao": "CRUD com JWT, validação, testes automatizados e documentação OpenAPI.", "nivel": "basico"},
         {"titulo": "Encurtador de URLs", "descricao": "Serviço com banco relacional, cache e métricas de acesso, publicado com Docker.", "nivel": "basico"},
-        {"titulo": "E-commerce com filas e pagamentos simulados", "descricao": "Serviços separados, mensageria, idempotência e CI/CD no GitHub Actions.", "nivel": "intermediario"}
+        {"titulo": "E-commerce com filas e pagamentos simulados", "descricao": "Serviços separados, mensageria, idempotência e CI/CD no GitHub Actions.", "nivel": "intermediario"},
+        {
+          "titulo": "Plataforma de microsserviços com resiliência e observabilidade",
+          "descricao": "Circuit breaker, tracing distribuído, métricas, testes de carga e documentação das decisões de arquitetura (ADRs).",
+          "nivel": "avancado"
+        },
+        {
+          "titulo": "Contribuição aceita em um projeto open source relevante",
+          "descricao": "Issues e pull requests revisados e mesclados em uma biblioteca ou framework de back-end amplamente usado.",
+          "nivel": "avancado"
+        }
       ]
     },
     "frontend": {
@@ -227,15 +312,43 @@
         {"habilidade": "ux", "nivel": 1, "prioridade": 5},
         {"habilidade": "apis", "nivel": 1, "prioridade": 6}
       ],
+      "pleno": [
+        {"habilidade": "javascript", "nivel": 3, "prioridade": 1},
+        {"habilidade": "framework_front", "nivel": 3, "prioridade": 2},
+        {"habilidade": "html_css", "nivel": 3, "prioridade": 3},
+        {"habilidade": "ux", "nivel": 2, "prioridade": 4},
+        {"habilidade": "apis", "nivel": 2, "prioridade": 5},
+        {"habilidade": "performance_web", "nivel": 2, "prioridade": 6},
+        {"habilidade": "teste_auto", "nivel": 1, "prioridade": 7},
+        {"habilidade": "cicd", "nivel": 1, "prioridade": 8}
+      ],
+      "senior": [
+        {"habilidade": "arquitetura_front", "nivel": 2, "prioridade": 1},
+        {"habilidade": "performance_web", "nivel": 3, "prioridade": 2},
+        {"habilidade": "ux", "nivel": 3, "prioridade": 3},
+        {"habilidade": "lideranca_tecnica", "nivel": 2, "prioridade": 4},
+        {"habilidade": "estrategia_negocio", "nivel": 1, "prioridade": 5}
+      ],
       "certificacoes": [
         {"nome": "Meta Front-End Developer (Coursera)", "nivel": "inicial"},
         {"nome": "Google UX Design Certificate", "nivel": "inicial"},
-        {"nome": "freeCodeCamp - Responsive Web Design / JavaScript Algorithms", "nivel": "inicial"}
+        {"nome": "freeCodeCamp - Responsive Web Design / JavaScript Algorithms", "nivel": "inicial"},
+        {"nome": "IAAP Web Accessibility Specialist (WAS)", "nivel": "avancado"}
       ],
       "projetos": [
         {"titulo": "Portfólio pessoal responsivo e acessível", "descricao": "Site com HTML/CSS/JS, nota alta no Lighthouse e publicado no GitHub Pages.", "nivel": "basico"},
         {"titulo": "Clone de interface (Spotify, Netflix ou Airbnb)", "descricao": "Reprodução fiel de uma tela real consumindo uma API pública.", "nivel": "basico"},
-        {"titulo": "Dashboard em React com design system próprio", "descricao": "Componentes reutilizáveis, Storybook, testes e estado global.", "nivel": "intermediario"}
+        {"titulo": "Dashboard em React com design system próprio", "descricao": "Componentes reutilizáveis, Storybook, testes e estado global.", "nivel": "intermediario"},
+        {
+          "titulo": "Design system open source publicado no npm",
+          "descricao": "Biblioteca de componentes acessíveis com documentação em Storybook, testes visuais e versionamento semântico.",
+          "nivel": "avancado"
+        },
+        {
+          "titulo": "Aplicação em micro front-ends com orçamento de performance no CI",
+          "descricao": "Monorepo, módulos independentes e Lighthouse CI bloqueando regressões de Core Web Vitals.",
+          "nivel": "avancado"
+        }
       ]
     },
     "ciencia_dados": {
@@ -247,15 +360,44 @@
         {"habilidade": "ml", "nivel": 1, "prioridade": 5},
         {"habilidade": "git", "nivel": 1, "prioridade": 6}
       ],
+      "pleno": [
+        {"habilidade": "python", "nivel": 3, "prioridade": 1},
+        {"habilidade": "estatistica", "nivel": 3, "prioridade": 2},
+        {"habilidade": "pandas", "nivel": 3, "prioridade": 3},
+        {"habilidade": "sql", "nivel": 3, "prioridade": 4},
+        {"habilidade": "ml", "nivel": 3, "prioridade": 5},
+        {"habilidade": "git", "nivel": 2, "prioridade": 6},
+        {"habilidade": "comunicacao_doc", "nivel": 2, "prioridade": 7},
+        {"habilidade": "mlops", "nivel": 1, "prioridade": 8}
+      ],
+      "senior": [
+        {"habilidade": "ml_avancado", "nivel": 2, "prioridade": 1},
+        {"habilidade": "mlops", "nivel": 2, "prioridade": 2},
+        {"habilidade": "big_data", "nivel": 1, "prioridade": 3},
+        {"habilidade": "comunicacao_doc", "nivel": 3, "prioridade": 4},
+        {"habilidade": "lideranca_tecnica", "nivel": 2, "prioridade": 5},
+        {"habilidade": "estrategia_negocio", "nivel": 2, "prioridade": 6}
+      ],
       "certificacoes": [
         {"nome": "Google Data Analytics Certificate", "nivel": "inicial"},
         {"nome": "IBM Data Science Professional Certificate", "nivel": "inicial"},
-        {"nome": "Microsoft Azure Data Scientist Associate (DP-100)", "nivel": "intermediario"}
+        {"nome": "Microsoft Azure Data Scientist Associate (DP-100)", "nivel": "intermediario"},
+        {"nome": "Google Cloud Professional Machine Learning Engineer", "nivel": "avancado"}
       ],
       "projetos": [
         {"titulo": "Análise exploratória de um dataset público (Kaggle)", "descricao": "Notebook com limpeza, gráficos e conclusões de negócio bem escritas.", "nivel": "basico"},
         {"titulo": "Modelo de previsão de churn ou de preços", "descricao": "Pipeline com validação cruzada, comparação de modelos e métricas explicadas.", "nivel": "basico"},
-        {"titulo": "Modelo em produção com API e monitoramento", "descricao": "Modelo servido por API, versionado com MLflow e com detecção de drift.", "nivel": "intermediario"}
+        {"titulo": "Modelo em produção com API e monitoramento", "descricao": "Modelo servido por API, versionado com MLflow e com detecção de drift.", "nivel": "intermediario"},
+        {
+          "titulo": "Plataforma de MLOps de ponta a ponta",
+          "descricao": "Treino reprodutível, registry de modelos, deploy automatizado e monitoramento de drift com alertas.",
+          "nivel": "avancado"
+        },
+        {
+          "titulo": "Case com experimento A/B e impacto de negócio medido",
+          "descricao": "Hipótese, desenho do experimento, análise estatística e recomendação apresentada em formato executivo.",
+          "nivel": "avancado"
+        }
       ]
     },
     "eng_dados": {
@@ -268,15 +410,46 @@
         {"habilidade": "dw", "nivel": 1, "prioridade": 6},
         {"habilidade": "docker", "nivel": 1, "prioridade": 7}
       ],
+      "pleno": [
+        {"habilidade": "sql", "nivel": 3, "prioridade": 1},
+        {"habilidade": "python", "nivel": 3, "prioridade": 2},
+        {"habilidade": "etl", "nivel": 3, "prioridade": 3},
+        {"habilidade": "dw", "nivel": 2, "prioridade": 4},
+        {"habilidade": "linux", "nivel": 2, "prioridade": 5},
+        {"habilidade": "docker", "nivel": 2, "prioridade": 6},
+        {"habilidade": "big_data", "nivel": 1, "prioridade": 7},
+        {"habilidade": "cicd", "nivel": 1, "prioridade": 8},
+        {"habilidade": "nuvem_fund", "nivel": 1, "prioridade": 9}
+      ],
+      "senior": [
+        {"habilidade": "dw", "nivel": 3, "prioridade": 1},
+        {"habilidade": "big_data", "nivel": 2, "prioridade": 2},
+        {"habilidade": "dados_governanca", "nivel": 2, "prioridade": 3},
+        {"habilidade": "arquitetura", "nivel": 2, "prioridade": 4},
+        {"habilidade": "nuvem_fund", "nivel": 2, "prioridade": 5},
+        {"habilidade": "lideranca_tecnica", "nivel": 2, "prioridade": 6}
+      ],
       "certificacoes": [
         {"nome": "Databricks Certified Data Engineer Associate", "nivel": "inicial"},
         {"nome": "Google Cloud Professional Data Engineer", "nivel": "intermediario"},
-        {"nome": "AWS Certified Data Engineer - Associate", "nivel": "intermediario"}
+        {"nome": "AWS Certified Data Engineer - Associate", "nivel": "intermediario"},
+        {"nome": "Databricks Certified Data Engineer Professional", "nivel": "avancado"},
+        {"nome": "Snowflake SnowPro Advanced: Data Engineer", "nivel": "avancado"}
       ],
       "projetos": [
         {"titulo": "Pipeline ETL de uma API pública para um banco relacional", "descricao": "Extração agendada, transformação com Python e carga em PostgreSQL.", "nivel": "basico"},
         {"titulo": "Data Warehouse dimensional com dbt", "descricao": "Modelo fato e dimensão, testes de qualidade e documentação gerada.", "nivel": "basico"},
-        {"titulo": "Data Lake com Airflow e Spark na nuvem", "descricao": "Ingestão em lote e em streaming, particionamento e orquestração completa.", "nivel": "intermediario"}
+        {"titulo": "Data Lake com Airflow e Spark na nuvem", "descricao": "Ingestão em lote e em streaming, particionamento e orquestração completa.", "nivel": "intermediario"},
+        {
+          "titulo": "Plataforma de dados em streaming com Kafka e Spark",
+          "descricao": "Ingestão em tempo real, processamento com garantias de entrega, reprocessamento e monitoramento de atraso (lag).",
+          "nivel": "avancado"
+        },
+        {
+          "titulo": "Lakehouse com governança, catálogo e contratos de dados",
+          "descricao": "Camadas bronze, prata e ouro, linhagem de dados, testes de qualidade e controle de acesso conforme a LGPD.",
+          "nivel": "avancado"
+        }
       ]
     },
     "ciberseguranca": {
@@ -288,15 +461,45 @@
         {"habilidade": "pentest", "nivel": 1, "prioridade": 5},
         {"habilidade": "git", "nivel": 1, "prioridade": 6}
       ],
+      "pleno": [
+        {"habilidade": "redes", "nivel": 3, "prioridade": 1},
+        {"habilidade": "linux", "nivel": 3, "prioridade": 2},
+        {"habilidade": "seguranca_fund", "nivel": 3, "prioridade": 3},
+        {"habilidade": "pentest", "nivel": 2, "prioridade": 4},
+        {"habilidade": "python", "nivel": 2, "prioridade": 5},
+        {"habilidade": "appsec", "nivel": 1, "prioridade": 6},
+        {"habilidade": "resposta_incidentes", "nivel": 1, "prioridade": 7},
+        {"habilidade": "nuvem_fund", "nivel": 1, "prioridade": 8}
+      ],
+      "senior": [
+        {"habilidade": "pentest", "nivel": 3, "prioridade": 1},
+        {"habilidade": "appsec", "nivel": 3, "prioridade": 2},
+        {"habilidade": "resposta_incidentes", "nivel": 2, "prioridade": 3},
+        {"habilidade": "arquitetura", "nivel": 1, "prioridade": 4},
+        {"habilidade": "lideranca_tecnica", "nivel": 2, "prioridade": 5},
+        {"habilidade": "estrategia_negocio", "nivel": 1, "prioridade": 6}
+      ],
       "certificacoes": [
         {"nome": "CompTIA Security+", "nivel": "inicial"},
         {"nome": "eJPT (eLearnSecurity Junior Penetration Tester)", "nivel": "inicial"},
-        {"nome": "CEH ou OSCP", "nivel": "intermediario"}
+        {"nome": "CEH ou OSCP", "nivel": "intermediario"},
+        {"nome": "CISSP (ISC2)", "nivel": "avancado"},
+        {"nome": "GIAC Certified Incident Handler (GCIH)", "nivel": "avancado"}
       ],
       "projetos": [
         {"titulo": "Writeups de laboratórios (TryHackMe e Hack The Box)", "descricao": "Relatos técnicos publicados no GitHub explicando cada etapa da exploração.", "nivel": "basico"},
         {"titulo": "Scanner de portas e de cabeçalhos HTTP em Python", "descricao": "Ferramenta de linha de comando com relatório de achados.", "nivel": "basico"},
-        {"titulo": "Laboratório caseiro de SOC com SIEM", "descricao": "Wazuh ou Elastic coletando logs, com regras de detecção e resposta a incidente.", "nivel": "intermediario"}
+        {"titulo": "Laboratório caseiro de SOC com SIEM", "descricao": "Wazuh ou Elastic coletando logs, com regras de detecção e resposta a incidente.", "nivel": "intermediario"},
+        {
+          "titulo": "Programa de threat modeling e SAST/DAST no CI",
+          "descricao": "Modelagem de ameaças (STRIDE) de uma aplicação real, varreduras automatizadas no pipeline e correção priorizada por risco.",
+          "nivel": "avancado"
+        },
+        {
+          "titulo": "Plano de resposta a incidentes com simulação",
+          "descricao": "Playbooks documentados, exercício tabletop, linha do tempo do incidente e relatório de lições aprendidas.",
+          "nivel": "avancado"
+        }
       ]
     },
     "devops": {
@@ -310,15 +513,47 @@
         {"habilidade": "observabilidade", "nivel": 1, "prioridade": 7},
         {"habilidade": "iac", "nivel": 1, "prioridade": 8}
       ],
+      "pleno": [
+        {"habilidade": "linux", "nivel": 3, "prioridade": 1},
+        {"habilidade": "docker", "nivel": 3, "prioridade": 2},
+        {"habilidade": "cicd", "nivel": 3, "prioridade": 3},
+        {"habilidade": "iac", "nivel": 2, "prioridade": 4},
+        {"habilidade": "observabilidade", "nivel": 2, "prioridade": 5},
+        {"habilidade": "redes", "nivel": 2, "prioridade": 6},
+        {"habilidade": "python", "nivel": 2, "prioridade": 7},
+        {"habilidade": "kubernetes", "nivel": 1, "prioridade": 8},
+        {"habilidade": "nuvem_fund", "nivel": 1, "prioridade": 9}
+      ],
+      "senior": [
+        {"habilidade": "kubernetes", "nivel": 2, "prioridade": 1},
+        {"habilidade": "iac", "nivel": 3, "prioridade": 2},
+        {"habilidade": "observabilidade", "nivel": 3, "prioridade": 3},
+        {"habilidade": "sre_praticas", "nivel": 2, "prioridade": 4},
+        {"habilidade": "nuvem_fund", "nivel": 2, "prioridade": 5},
+        {"habilidade": "arquitetura", "nivel": 2, "prioridade": 6},
+        {"habilidade": "lideranca_tecnica", "nivel": 2, "prioridade": 7}
+      ],
       "certificacoes": [
         {"nome": "Linux Foundation Certified IT Associate (LFCA)", "nivel": "inicial"},
         {"nome": "HashiCorp Terraform Associate", "nivel": "intermediario"},
-        {"nome": "CKA (Certified Kubernetes Administrator)", "nivel": "intermediario"}
+        {"nome": "CKA (Certified Kubernetes Administrator)", "nivel": "intermediario"},
+        {"nome": "AWS Certified DevOps Engineer - Professional", "nivel": "avancado"},
+        {"nome": "CKS (Certified Kubernetes Security Specialist)", "nivel": "avancado"}
       ],
       "projetos": [
         {"titulo": "Pipeline CI/CD completo para uma aplicação conteinerizada", "descricao": "GitHub Actions executando build, testes e deploy automático.", "nivel": "basico"},
         {"titulo": "Stack de monitoramento com Prometheus e Grafana", "descricao": "Métricas, dashboards e alertas de uma aplicação de exemplo.", "nivel": "basico"},
-        {"titulo": "Cluster Kubernetes provisionado com Terraform", "descricao": "Infraestrutura como código, deploy com Helm e GitOps.", "nivel": "intermediario"}
+        {"titulo": "Cluster Kubernetes provisionado com Terraform", "descricao": "Infraestrutura como código, deploy com Helm e GitOps.", "nivel": "intermediario"},
+        {
+          "titulo": "Plataforma interna de deploy com GitOps",
+          "descricao": "Argo CD ou Flux, múltiplos ambientes, rollback automático e políticas de segurança no cluster.",
+          "nivel": "avancado"
+        },
+        {
+          "titulo": "Programa de SRE com SLOs, error budget e post-mortems",
+          "descricao": "SLIs e SLOs definidos para uma aplicação, alertas baseados em orçamento de erro e post-mortems publicados.",
+          "nivel": "avancado"
+        }
       ]
     },
     "cloud": {
@@ -331,15 +566,49 @@
         {"habilidade": "docker", "nivel": 1, "prioridade": 6},
         {"habilidade": "git", "nivel": 1, "prioridade": 7}
       ],
+      "pleno": [
+        {"habilidade": "nuvem_fund", "nivel": 3, "prioridade": 1},
+        {"habilidade": "redes", "nivel": 3, "prioridade": 2},
+        {"habilidade": "iac", "nivel": 2, "prioridade": 3},
+        {"habilidade": "arquitetura", "nivel": 2, "prioridade": 4},
+        {"habilidade": "docker", "nivel": 2, "prioridade": 5},
+        {"habilidade": "seguranca_fund", "nivel": 1, "prioridade": 6},
+        {"habilidade": "finops", "nivel": 1, "prioridade": 7},
+        {"habilidade": "kubernetes", "nivel": 1, "prioridade": 8}
+      ],
+      "senior": [
+        {"habilidade": "arquitetura", "nivel": 3, "prioridade": 1},
+        {"habilidade": "iac", "nivel": 3, "prioridade": 2},
+        {"habilidade": "seguranca_fund", "nivel": 2, "prioridade": 3},
+        {"habilidade": "finops", "nivel": 2, "prioridade": 4},
+        {"habilidade": "lideranca_tecnica", "nivel": 2, "prioridade": 5},
+        {"habilidade": "estrategia_negocio", "nivel": 2, "prioridade": 6}
+      ],
       "certificacoes": [
         {"nome": "AWS Certified Cloud Practitioner", "nivel": "inicial"},
         {"nome": "AWS Certified Solutions Architect - Associate", "nivel": "intermediario"},
-        {"nome": "Microsoft Azure Administrator (AZ-104)", "nivel": "intermediario"}
+        {"nome": "Microsoft Azure Administrator (AZ-104)", "nivel": "intermediario"},
+        {"nome": "AWS Certified Solutions Architect - Professional", "nivel": "avancado"},
+        {"nome": "Google Cloud Professional Cloud Architect", "nivel": "avancado"}
       ],
       "projetos": [
         {"titulo": "Site estático com CDN, HTTPS e domínio próprio", "descricao": "Hospedagem em S3/CloudFront (ou equivalente) com custo documentado.", "nivel": "basico"},
         {"titulo": "Aplicação de três camadas em VPC com Terraform", "descricao": "Balanceador, instâncias em múltiplas zonas e banco gerenciado.", "nivel": "basico"},
-        {"titulo": "Migração de uma aplicação para a nuvem com análise de custo", "descricao": "Diagrama de arquitetura, plano de migração, alta disponibilidade e FinOps.", "nivel": "intermediario"}
+        {
+          "titulo": "Migração de uma aplicação para a nuvem com análise de custo",
+          "descricao": "Diagrama de arquitetura, plano de migração, alta disponibilidade e FinOps.",
+          "nivel": "intermediario"
+        },
+        {
+          "titulo": "Arquitetura multirregião com failover e DR testado",
+          "descricao": "Replicação de dados, DNS com failover, metas de RTO e RPO definidas e exercício de recuperação documentado.",
+          "nivel": "avancado"
+        },
+        {
+          "titulo": "Landing zone com governança, segurança e FinOps",
+          "descricao": "Contas organizadas por ambiente, políticas como código, guardrails de segurança e relatório de custos por time.",
+          "nivel": "avancado"
+        }
       ]
     },
     "mobile": {
@@ -351,15 +620,42 @@
         {"habilidade": "apis", "nivel": 1, "prioridade": 5},
         {"habilidade": "ux", "nivel": 1, "prioridade": 6}
       ],
+      "pleno": [
+        {"habilidade": "mobile_lang", "nivel": 3, "prioridade": 1},
+        {"habilidade": "mobile_ux", "nivel": 3, "prioridade": 2},
+        {"habilidade": "apis", "nivel": 2, "prioridade": 3},
+        {"habilidade": "ux", "nivel": 2, "prioridade": 4},
+        {"habilidade": "git", "nivel": 3, "prioridade": 5},
+        {"habilidade": "teste_auto", "nivel": 1, "prioridade": 6},
+        {"habilidade": "mobile_producao", "nivel": 1, "prioridade": 7}
+      ],
+      "senior": [
+        {"habilidade": "mobile_arquitetura", "nivel": 3, "prioridade": 1},
+        {"habilidade": "mobile_producao", "nivel": 3, "prioridade": 2},
+        {"habilidade": "arquitetura", "nivel": 1, "prioridade": 3},
+        {"habilidade": "lideranca_tecnica", "nivel": 2, "prioridade": 4},
+        {"habilidade": "estrategia_negocio", "nivel": 1, "prioridade": 5}
+      ],
       "certificacoes": [
         {"nome": "Associate Android Developer (Google)", "nivel": "inicial"},
         {"nome": "Flutter Certified Application Developer", "nivel": "inicial"},
-        {"nome": "Meta Android / iOS Developer (Coursera)", "nivel": "intermediario"}
+        {"nome": "Meta Android / iOS Developer (Coursera)", "nivel": "intermediario"},
+        {"nome": "Google Cloud Professional Cloud Developer", "nivel": "avancado"}
       ],
       "projetos": [
         {"titulo": "App de lista de tarefas com armazenamento local", "descricao": "Navegação, persistência offline e testes de widget.", "nivel": "basico"},
         {"titulo": "App que consome uma API pública", "descricao": "Listagem, detalhe, favoritos, estados de carregamento e erro.", "nivel": "basico"},
-        {"titulo": "App publicado nas lojas com autenticação e notificações push", "descricao": "Firebase, CI para build e distribuição e crash reporting.", "nivel": "intermediario"}
+        {"titulo": "App publicado nas lojas com autenticação e notificações push", "descricao": "Firebase, CI para build e distribuição e crash reporting.", "nivel": "intermediario"},
+        {
+          "titulo": "App com arquitetura modular e modo offline-first",
+          "descricao": "Módulos independentes, sincronização com resolução de conflitos, testes automatizados e profiling de desempenho.",
+          "nivel": "avancado"
+        },
+        {
+          "titulo": "SDK ou biblioteca mobile open source publicada",
+          "descricao": "Pacote publicado (pub.dev ou Maven) com documentação, exemplos, testes e versionamento semântico.",
+          "nivel": "avancado"
+        }
       ]
     },
     "qa": {
@@ -372,15 +668,44 @@
         {"habilidade": "teste_auto", "nivel": 2, "prioridade": 6},
         {"habilidade": "apis", "nivel": 1, "prioridade": 7}
       ],
+      "pleno": [
+        {"habilidade": "teste_tecnicas", "nivel": 3, "prioridade": 1},
+        {"habilidade": "teste_auto", "nivel": 3, "prioridade": 2},
+        {"habilidade": "apis", "nivel": 2, "prioridade": 3},
+        {"habilidade": "agil", "nivel": 2, "prioridade": 4},
+        {"habilidade": "sql", "nivel": 2, "prioridade": 5},
+        {"habilidade": "cicd", "nivel": 1, "prioridade": 6},
+        {"habilidade": "qa_estrategia", "nivel": 1, "prioridade": 7}
+      ],
+      "senior": [
+        {"habilidade": "qa_estrategia", "nivel": 3, "prioridade": 1},
+        {"habilidade": "cicd", "nivel": 2, "prioridade": 2},
+        {"habilidade": "observabilidade", "nivel": 1, "prioridade": 3},
+        {"habilidade": "seguranca_fund", "nivel": 1, "prioridade": 4},
+        {"habilidade": "lideranca_tecnica", "nivel": 2, "prioridade": 5},
+        {"habilidade": "estrategia_negocio", "nivel": 1, "prioridade": 6}
+      ],
       "certificacoes": [
         {"nome": "CTFL - ISTQB Foundation Level (CBTS)", "nivel": "inicial"},
         {"nome": "ISTQB Test Automation Engineer", "nivel": "intermediario"},
-        {"nome": "Certified Agile Tester", "nivel": "intermediario"}
+        {"nome": "Certified Agile Tester", "nivel": "intermediario"},
+        {"nome": "ISTQB Advanced Level - Test Manager", "nivel": "avancado"},
+        {"nome": "ISTQB Advanced Level - Technical Test Analyst", "nivel": "avancado"}
       ],
       "projetos": [
         {"titulo": "Plano e casos de teste de um sistema real", "descricao": "Documentação de testes com cenários, evidências e relatório de bugs.", "nivel": "basico"},
         {"titulo": "Suíte de testes E2E com Cypress ou Playwright", "descricao": "Testes automatizados de um site, rodando no GitHub Actions.", "nivel": "basico"},
-        {"titulo": "Framework de testes de API com relatórios e testes de carga", "descricao": "Pytest ou RestAssured com Allure e cenários de performance em k6.", "nivel": "intermediario"}
+        {"titulo": "Framework de testes de API com relatórios e testes de carga", "descricao": "Pytest ou RestAssured com Allure e cenários de performance em k6.", "nivel": "intermediario"},
+        {
+          "titulo": "Estratégia de qualidade com testes de performance em k6",
+          "descricao": "Plano de qualidade, cenários de carga, análise de gargalos e relatório com recomendações.",
+          "nivel": "avancado"
+        },
+        {
+          "titulo": "Pipeline de qualidade com gates, cobertura e testes de mutação",
+          "descricao": "Quality gates no CI, métricas de cobertura e de testes instáveis (flaky) e painel de qualidade do time.",
+          "nivel": "avancado"
+        }
       ]
     },
     "produto": {
@@ -391,16 +716,67 @@
         {"habilidade": "ux", "nivel": 1, "prioridade": 4},
         {"habilidade": "sql", "nivel": 1, "prioridade": 5}
       ],
+      "pleno": [
+        {"habilidade": "agil", "nivel": 3, "prioridade": 1},
+        {"habilidade": "produto_disc", "nivel": 3, "prioridade": 2},
+        {"habilidade": "comunicacao_doc", "nivel": 3, "prioridade": 3},
+        {"habilidade": "ux", "nivel": 2, "prioridade": 4},
+        {"habilidade": "sql", "nivel": 2, "prioridade": 5},
+        {"habilidade": "produto_estrategia", "nivel": 1, "prioridade": 6},
+        {"habilidade": "gestao_stakeholders", "nivel": 1, "prioridade": 7}
+      ],
+      "senior": [
+        {"habilidade": "produto_estrategia", "nivel": 3, "prioridade": 1},
+        {"habilidade": "gestao_stakeholders", "nivel": 2, "prioridade": 2},
+        {"habilidade": "estrategia_negocio", "nivel": 3, "prioridade": 3},
+        {"habilidade": "sql", "nivel": 3, "prioridade": 4},
+        {"habilidade": "lideranca_tecnica", "nivel": 2, "prioridade": 5}
+      ],
       "certificacoes": [
         {"nome": "Professional Scrum Product Owner I (PSPO I)", "nivel": "inicial"},
         {"nome": "Certified Scrum Product Owner (CSPO)", "nivel": "inicial"},
-        {"nome": "Pragmatic Institute Product Management", "nivel": "intermediario"}
+        {"nome": "Pragmatic Institute Product Management", "nivel": "intermediario"},
+        {"nome": "Professional Scrum Product Owner III (PSPO III)", "nivel": "avancado"},
+        {"nome": "SAFe Product Owner/Product Manager (POPM)", "nivel": "avancado"}
       ],
       "projetos": [
         {"titulo": "Product Requirements Document (PRD) de um app real", "descricao": "Problema, personas, user stories, critérios de aceite e métricas de sucesso.", "nivel": "basico"},
         {"titulo": "Case de discovery com entrevistas e priorização RICE", "descricao": "Pesquisa com usuários, backlog priorizado e roadmap publicado no GitHub.", "nivel": "basico"},
-        {"titulo": "Dashboard de métricas de produto (AARRR) com SQL", "descricao": "Funil, retenção e recomendações baseadas em dados.", "nivel": "intermediario"}
+        {"titulo": "Dashboard de métricas de produto (AARRR) com SQL", "descricao": "Funil, retenção e recomendações baseadas em dados.", "nivel": "intermediario"},
+        {
+          "titulo": "Estratégia de produto e roadmap trimestral com OKRs",
+          "descricao": "Visão, hipóteses de valor, priorização, métricas de sucesso e revisão dos resultados ao fim do ciclo.",
+          "nivel": "avancado"
+        },
+        {
+          "titulo": "Experimento A/B documentado de ponta a ponta",
+          "descricao": "Hipótese, desenho, análise estatística do resultado e decisão registrada com os aprendizados.",
+          "nivel": "avancado"
+        }
       ]
+    }
+  },
+  "niveis_carreira": {
+    "junior": {
+      "rotulo": "Júnior",
+      "experiencia_tipica": "0 a 2 anos",
+      "descricao": "Entrega tarefas bem definidas com apoio do time e domina os fundamentos da trilha.",
+      "certificacoes": ["inicial", "intermediario"],
+      "projetos": ["basico", "intermediario"]
+    },
+    "pleno": {
+      "rotulo": "Pleno",
+      "experiencia_tipica": "2 a 5 anos",
+      "descricao": "Entrega funcionalidades completas com autonomia, toma decisões técnicas do dia a dia e apoia os juniores.",
+      "certificacoes": ["intermediario", "avancado"],
+      "projetos": ["intermediario", "avancado"]
+    },
+    "senior": {
+      "rotulo": "Sênior",
+      "experiencia_tipica": "5 anos ou mais",
+      "descricao": "Define arquitetura e direção técnica, resolve problemas ambíguos, mentora o time e conecta a técnica ao negócio.",
+      "certificacoes": ["avancado"],
+      "projetos": ["avancado"]
     }
   }
 }
