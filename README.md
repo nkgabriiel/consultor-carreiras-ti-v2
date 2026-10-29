@@ -1,8 +1,10 @@
-# Consultor Inteligente de Carreiras em TI
+# Consultor Avançado de Carreiras em TI (Etapa 2)
 
-Sistema especialista baseado em regras (Python + [Experta](https://github.com/nilp0inter/experta) + Streamlit)
-que entrevista o usuário e recomenda uma entre 10 trilhas de carreira em TI, mostrando as regras que
-levaram à conclusão.
+Evolução do [consultor de carreiras da Etapa 1](https://github.com/nkgabriiel/consultor-carreiras-ti):
+um sistema especialista com **pontuação ponderada e tratamento de incerteza**, em Python + Streamlit.
+Em vez de recomendar uma única trilha por regras SE-ENTÃO, ele lê respostas graduais (escala 1 a 5),
+calcula a **compatibilidade percentual** com 10 trilhas, aponta as **lacunas de competência** para o nível
+Júnior e gera um **roadmap personalizado** (o que estudar, certificações e projetos de portfólio).
 
 Trabalho da disciplina de Inteligência Artificial, Ciência da Computação, UNIPAC Barbacena.
 
@@ -13,89 +15,114 @@ Cloud Architecture, Mobile, QA e Gestão de Produtos.
 
 ## Como instalar e executar
 
-Requer Python 3.10 ou superior (testado em 3.13).
+Requer Python 3.10 ou superior (testado em 3.14).
 
 ```bash
-git clone <url-do-repositorio>
-cd consultor-carreiras-ti
-
 python -m venv .venv
 source .venv/bin/activate        # Windows: .venv\Scripts\activate
-
 pip install -r requirements.txt
 streamlit run app.py
 ```
 
-Para rodar as personas de validação:
+Validação:
 
 ```bash
-python personas.py      # tabela com esperado x obtido
-pytest -q               # testes automatizados
+python personas.py     # tabela com esperado x obtido
+pytest -q              # 72 testes (motor, roadmap, casos limite e fluxo da interface)
 ```
 
-### Observação sobre o Experta no Python 3.10+
+### Windows (PowerShell), sem ativar o venv
 
-O Experta depende do `frozendict==1.2`, que usa `collections.Mapping` (removido no Python 3.10).
-Sem correção, o `import experta` falha com `AttributeError`. O topo de `engine.py` faz um patch
-de compatibilidade antes do import, então nada precisa ser feito manualmente. **Importe sempre
-`engine` antes de qualquer outro módulo que use o Experta.**
+Se o `.venv` já existe e tem as dependências instaladas, chame o Python dele direto, a partir da pasta
+do projeto. Assim não é preciso ativar nada:
+
+```powershell
+cd C:\caminho\para\consultor-carreiras-ti-v2
+.venv\Scripts\python.exe -m streamlit run app.py     # interface em http://localhost:8501
+.venv\Scripts\python.exe personas.py                 # personas: esperado x obtido
+.venv\Scripts\python.exe -m pytest -q                # testes automatizados
+```
+
+Na primeira vez, crie o ambiente e instale as dependências:
+
+```powershell
+python -m venv .venv
+.venv\Scripts\python.exe -m pip install -r requirements.txt
+```
+
+Se os acentos saírem quebrados no terminal, rode antes `$env:PYTHONIOENCODING="utf-8"`.
 
 ## Estrutura
 
 | Arquivo | Conteúdo |
 |---|---|
-| `perguntas.py` | Catálogo das 10 trilhas e das 9 perguntas da entrevista |
-| `engine.py` | Base de conhecimento (25 regras Experta), tabela `REGRAS` e função `recomendar()` |
-| `app.py` | Interface Streamlit |
-| `personas.py` | 12 personas de teste com a trilha esperada |
-| `test_personas.py` | Testes pytest |
-| `MATRIZ_DECISAO.md` | Matriz de decisão (Fase 1), gerada por `python engine.py > MATRIZ_DECISAO.md` |
+| `regras_carreiras.json` | **Toda a base de conhecimento**: perguntas, pesos por trilha, penalidades, sinergias, habilidades e roadmaps |
+| `base_conhecimento.py` | Carrega o JSON e valida a consistência (pesos, trilhas e habilidades referenciadas existem) |
+| `engine.py` | Motor de inferência: pontuação ponderada, ranking Top 3, justificativas e detecção de empate parcial |
+| `roadmap.py` | Análise de gaps, estimativa de esforço e geração do roadmap (também exporta Markdown) |
+| `app.py` | Interface Streamlit em etapas (wizard) |
+| `personas.py` | 10 personas (uma por trilha) e 2 perfis ambíguos |
+| `test_engine.py`, `test_roadmap.py`, `test_app.py` | Testes automatizados |
 
 ## Como o motor funciona
 
-**Entrevista.** São 9 perguntas objetivas: as 4 dimensões do enunciado (afinidade matemática,
-preferência de atuação, linguagem/ferramenta, tipo de entrega) mais 5 de apoio (foco em dados,
-gosto por automação, interesse em nuvem, interação com negócio e importância do visual). As extras
-existem porque 4 dimensões não separam 10 trilhas, principalmente QA, Produto, Cloud e DevOps.
+**Entrada gradual.** As 21 perguntas usam escala Likert de 1 a 5 (14 de afinidades técnicas e 7 de
+objetivos de carreira). Cada resposta vira um grau em [0, 1]: `(resposta - 1) / 4`.
 
-**Fatos.** As respostas viram um único fato `Perfil(...)`. Regras de derivação criam fatos
-intermediários `Inferido(perfil=...)`.
+**Pontuação ponderada.** Para cada trilha, `pontos = Σ grau × peso`, com pesos de −5 a +5 definidos no
+JSON. O peso negativo desconta pontos quando o usuário tem muita afinidade com algo que conflita com a
+trilha. A aderência base é `pontos / máximo`, em que o máximo é a soma dos pesos positivos da trilha
+(100% = quem respondeu 5 em tudo que a trilha valoriza).
 
-**Regras em dois estágios (encadeamento para frente).**
+**Penalidades e sinergias** (`regras_combinadas` no JSON). Ajustam o percentual em pontos percentuais (pp):
 
-1. *Derivação (R01-R02):* cruzam várias respostas e declaram um fato inferido
-   (`perfil científico`, `perfil de infraestrutura`).
-2. *Pontuação (R03-R25):* cada regra soma ou subtrai pontos de trilhas e registra o motivo.
-   Algumas (R08, R17, R19) só disparam por causa de um fato inferido no estágio 1.
+- *Penalidade* para perfis conflitantes. Ex.: "não gosto de escrever código" (P01) tira 25 pp de Back-end;
+  matemática baixa (P02) tira 25 pp de Ciência de Dados.
+- *Sinergia* para combinações típicas. Ex.: infraestrutura alta + automação alta (S03) dá +8 pp a DevOps;
+  matemática alta + dados alta (S01) dá +8 pp a Ciência de Dados e −4 pp a Engenharia de Dados.
 
-**Decisão.** Vence a trilha com mais pontos. Desempate: maior peso de uma única regra, depois a
-ordem das trilhas. Se nenhuma trilha fica com pontos positivos, o sistema diz que as respostas são
-contraditórias em vez de chutar. A confiança vem da margem entre a 1ª e a 2ª colocada
-(≥4 alta, 2-3 média, <2 perfil misto).
+O resultado é limitado a [0, 100] e ordenado. Desempate: maior aderência, depois maior pontuação bruta,
+depois a ordem das trilhas no JSON.
 
-**Cientista x Engenheiro de Dados.** São separados por regras cruzadas:
+**Incerteza.** O diagnóstico informa:
 
-- R08 (matemática alta + modelagem) dá +5 a Ciência de Dados e −2 a Eng. de Dados.
-- R11 (pipelines + dados brutos/servidores) dá +5 a Eng. de Dados.
-- R12 (pipelines + matemática baixa/média) dá +2 a Eng. de Dados e −2 a Ciência de Dados.
-- R10 (matemática baixa + modelagem) tira 3 pontos de Ciência de Dados.
+- *confiança*: alta (1ª à frente da 2ª por 10 pp ou mais), média, ou baixa (5 pp ou menos, "perfil misto");
+- *empate parcial*: lista as trilhas dentro de 5 pp da primeira e quais respostas puxam as duas para cima;
+- *inconclusivo*: nenhuma trilha passa de 25% (respostas pouco informativas ou contraditórias).
 
-**Justificativa.** A interface mostra a trilha, as regras que somaram para ela, o ranking e a
-lista completa das regras disparadas na ordem de execução.
+**Gaps e roadmap.** Cada trilha define as habilidades exigidas de um Júnior, com nível alvo (0 a 3) e
+prioridade. O usuário informa seu nível atual e o sistema calcula a lacuna de cada habilidade, a prontidão
+para Júnior (%), as horas estimadas (a partir de `horas_por_nivel`, ajustadas pela experiência) e o prazo
+em semanas segundo as horas de estudo por semana. O plano separa o que nunca foi estudado do que precisa de
+reforço e sugere certificações e projetos para o GitHub. Quem já tem experiência vê primeiro os projetos
+intermediários. O plano pode ser baixado em Markdown.
 
-## Validação com personas
+## Interface (Streamlit)
 
-`python personas.py` roda 12 personas: as 4 do enunciado (analítica, infra/segurança,
-visual/front-end, negócios/produto), uma para cada trilha restante e 2 casos confundíveis entre
-Ciência e Engenharia de Dados. Resultado atual: **12/12 corretas**.
+Wizard em 5 etapas: **1** Perfil pessoal, **2** Afinidades técnicas, **3** Objetivos de carreira,
+**4** Resultado (Top 3 com percentuais, radar, barras, tabela e justificativa por trilha) e
+**5** Plano de ação (autoavaliação das habilidades, métricas de prontidão, fases de estudo, certificações e
+projetos). A aba "Base de conhecimento" mostra a matriz de pesos (Pandas) e as regras combinadas lidas do JSON.
 
-Limitação: as personas foram escritas junto com os pesos das regras, então acertar todas é uma
-verificação de consistência, não de precisão. Em uma amostra de 4.000 respostas aleatórias (que
-são incoerentes por natureza), cerca de 4% resultam em "inconclusivo" e cerca de 10% terminam em
-empate exato no topo, resolvido pelo critério de desempate.
+## Alterando o conhecimento sem mexer no código
+
+Edite `regras_carreiras.json` (um peso, uma regra, uma certificação) e reinicie o app. Na carga, o
+`base_conhecimento.py` rejeita a base se algo estiver inconsistente, como peso para pergunta inexistente,
+trilha sem roadmap ou operador inválido. Um teste (`test_codigo_python_nao_conhece_as_trilhas`) garante que
+nenhuma trilha ou pergunta fica fixa no código do motor.
+
+## Testes de robustez e casos limite (Fase 5)
+
+- Todas as respostas em 1: resultado **inconclusivo**. Em 5: percentual limitado a 100% e **empate parcial**.
+  Em 3 (neutro): confiança nunca "alta".
+- **Marina** (gosta de dados e de web): Ciência de Dados 90% e Front-end 85% ficam juntas no topo, com
+  confiança baixa e explicação do empate. **Rafael** (infra + nuvem + automação): Cloud 82% e DevOps 79%.
+- Entradas inválidas (valor fora de 1 a 5, tipo errado, pergunta faltando ou desconhecida) levantam erro claro.
+- Base de conhecimento corrompida é recusada na carga.
 
 ## Limitações conhecidas
 
-- Os pesos são julgamento de quem montou a base, não vêm de dados reais.
-- As trilhas vizinhas (DevOps/Cloud, Back-end/Eng. de Dados) dependem das perguntas de apoio. Se o
-  usuário responde de forma ambígua, a confiança sai baixa e o sistema indica a 2ª opção.
+- Os pesos são julgamento de quem montou a base, não vêm de dados reais; as personas foram escritas junto
+  com os pesos, então acertar todas é uma verificação de consistência, não de precisão.
+- A aderência percentual é relativa ao perfil ideal de cada trilha, não uma probabilidade estatística.
+- Estimativas de horas e a lista de certificações são referências gerais e mudam com o tempo.

@@ -1,0 +1,406 @@
+{
+  "versao": "2.0",
+  "descricao": "Base de conhecimento do Consultor Avançado de Carreiras em TI. O motor (engine.py) não contém nenhuma regra: pesos, penalidades, sinergias, habilidades e roadmaps estão todos neste arquivo.",
+
+  "escala_likert": {
+    "min": 1,
+    "max": 5,
+    "rotulos": {
+      "1": "Nenhuma",
+      "2": "Pouca",
+      "3": "Moderada",
+      "4": "Muita",
+      "5": "Total"
+    }
+  },
+
+  "classificacao": {
+    "limiar_inconclusivo_pct": 25,
+    "limiar_empate_parcial_pp": 5
+  },
+
+  "perfil": {
+    "experiencia": {
+      "iniciante": {"rotulo": "Estou começando agora, sem projetos", "fator_tempo": 1.3, "projetos": "basico"},
+      "estudante": {"rotulo": "Estudante com alguns projetos pessoais", "fator_tempo": 1.0, "projetos": "basico"},
+      "estagio": {"rotulo": "Já fiz estágio ou freelas em TI", "fator_tempo": 0.8, "projetos": "intermediario"},
+      "transicao": {"rotulo": "Atuo em TI e quero mudar de área", "fator_tempo": 0.7, "projetos": "intermediario"}
+    },
+    "horas_semana": [3, 5, 10, 15, 20],
+    "horas_por_nivel": {"0": 0, "1": 30, "2": 45, "3": 60}
+  },
+
+  "perguntas": [
+    {"id": "matematica", "etapa": "afinidades", "texto": "Qual a sua afinidade com matemática, estatística e probabilidade?"},
+    {"id": "logica", "etapa": "afinidades", "texto": "Você gosta de resolver problemas de lógica e de pensar em algoritmos?"},
+    {"id": "codigo", "etapa": "afinidades", "texto": "Você gosta de escrever código todos os dias, como atividade principal?"},
+    {"id": "design", "etapa": "afinidades", "texto": "Qual a sua afinidade com design visual, interfaces e experiência do usuário?"},
+    {"id": "infra", "etapa": "afinidades", "texto": "Qual a sua afinidade com infraestrutura: servidores, redes e Linux?"},
+    {"id": "dados", "etapa": "afinidades", "texto": "Você gosta de trabalhar com grandes volumes de dados?"},
+    {"id": "bancos", "etapa": "afinidades", "texto": "Qual a sua afinidade com bancos de dados e modelagem de dados (SQL)?"},
+    {"id": "seguranca", "etapa": "afinidades", "texto": "Qual o seu interesse em segurança da informação e em encontrar vulnerabilidades?"},
+    {"id": "automacao", "etapa": "afinidades", "texto": "Você gosta de automatizar tarefas repetitivas (scripts, CI/CD, contêineres)?"},
+    {"id": "nuvem", "etapa": "afinidades", "texto": "Qual o seu interesse em provedores de nuvem (AWS, Azure, GCP)?"},
+    {"id": "mobile", "etapa": "afinidades", "texto": "Qual o seu interesse em criar aplicativos para celular?"},
+    {"id": "testes", "etapa": "afinidades", "texto": "Você é detalhista e gosta de testar software e caçar defeitos?"},
+    {"id": "comunicacao", "etapa": "afinidades", "texto": "Você gosta de conversar com clientes e áreas de negócio para entender necessidades?"},
+    {"id": "gestao", "etapa": "afinidades", "texto": "Você gosta de priorizar, organizar o trabalho de um time e tomar decisões de produto?"},
+
+    {"id": "obj_lideranca", "etapa": "objetivos", "texto": "Quero, no longo prazo, liderar times e participar de decisões estratégicas."},
+    {"id": "obj_pesquisa", "etapa": "objetivos", "texto": "Gosto de pesquisa, experimentação e de estudar conceitos teóricos a fundo."},
+    {"id": "obj_escala", "etapa": "objetivos", "texto": "Quero projetar sistemas que atendam milhões de acessos com alta disponibilidade."},
+    {"id": "obj_usuario", "etapa": "objetivos", "texto": "Quero ver pessoas usando diretamente aquilo que eu construo."},
+    {"id": "obj_incidentes", "etapa": "objetivos", "texto": "Aceito plantões e resolver incidentes sob pressão."},
+    {"id": "obj_qualidade", "etapa": "objetivos", "texto": "Me realizo garantindo que o software seja confiável e não quebre."},
+    {"id": "obj_investigacao", "etapa": "objetivos", "texto": "Gosto de pensar como um atacante e investigar falhas em sistemas."}
+  ],
+
+  "trilhas": {
+    "backend": {
+      "nome": "Desenvolvimento Back-end",
+      "descricao": "Lógica de servidores, construção de APIs, regras de negócio e bancos de dados.",
+      "pesos": {"matematica": 1, "logica": 5, "codigo": 5, "design": -1, "infra": 1, "dados": 1, "bancos": 4, "seguranca": 1, "automacao": 1, "nuvem": 1, "obj_escala": 3, "obj_qualidade": 1}
+    },
+    "frontend": {
+      "nome": "Front-end & UI/UX",
+      "descricao": "Interfaces web responsivas, experiência do usuário e frameworks reativos.",
+      "pesos": {"logica": 2, "codigo": 4, "design": 5, "infra": -2, "dados": -1, "mobile": 1, "comunicacao": 1, "obj_usuario": 4}
+    },
+    "ciencia_dados": {
+      "nome": "Ciência de Dados e Machine Learning",
+      "descricao": "Estatística, modelagem preditiva, análise de grandes massas de dados e IA.",
+      "pesos": {"matematica": 5, "logica": 2, "codigo": 3, "dados": 5, "bancos": 2, "obj_pesquisa": 5, "obj_investigacao": 1}
+    },
+    "eng_dados": {
+      "nome": "Engenharia de Dados",
+      "descricao": "Arquitetura de dados, pipelines (ETL/ELT) e infraestrutura para Data Lakes.",
+      "pesos": {"matematica": 2, "logica": 3, "codigo": 3, "design": -1, "infra": 2, "dados": 5, "bancos": 5, "automacao": 2, "nuvem": 2, "obj_escala": 4, "obj_pesquisa": 1}
+    },
+    "ciberseguranca": {
+      "nome": "Cibersegurança (Security / Pentesting)",
+      "descricao": "Defesa cibernética, análise de vulnerabilidades, criptografia e redes seguras.",
+      "pesos": {"matematica": 1, "logica": 2, "codigo": 2, "infra": 3, "seguranca": 5, "automacao": 1, "nuvem": 1, "testes": 1, "obj_incidentes": 3, "obj_investigacao": 5, "obj_pesquisa": 2, "obj_usuario": -1}
+    },
+    "devops": {
+      "nome": "DevOps & SRE",
+      "descricao": "Automação de processos, integração e entrega contínua (CI/CD) e contêineres.",
+      "pesos": {"logica": 2, "codigo": 2, "design": -1, "infra": 5, "seguranca": 1, "automacao": 5, "nuvem": 3, "testes": 1, "obj_escala": 3, "obj_incidentes": 5, "obj_qualidade": 1, "obj_usuario": -1}
+    },
+    "cloud": {
+      "nome": "Computação em Nuvem (Cloud Architecture)",
+      "descricao": "Planejamento, migração e gestão de infraestruturas escaláveis (AWS/Azure/GCP).",
+      "pesos": {"logica": 1, "codigo": 1, "infra": 5, "bancos": 1, "seguranca": 1, "automacao": 2, "nuvem": 5, "comunicacao": 1, "obj_lideranca": 2, "obj_escala": 5, "obj_incidentes": 1}
+    },
+    "mobile": {
+      "nome": "Desenvolvimento Mobile",
+      "descricao": "Ecossistema de dispositivos móveis (nativo ou multiplataforma com Flutter/React Native).",
+      "pesos": {"logica": 3, "codigo": 4, "design": 3, "infra": -2, "dados": -1, "mobile": 5, "obj_usuario": 4}
+    },
+    "qa": {
+      "nome": "Engenharia de Qualidade e Testes (QA)",
+      "descricao": "Testes automatizados, confiabilidade de software e processos de qualidade.",
+      "pesos": {"logica": 2, "codigo": 1, "seguranca": 1, "automacao": 3, "testes": 5, "comunicacao": 1, "obj_qualidade": 5, "obj_investigacao": 1, "obj_usuario": 1}
+    },
+    "produto": {
+      "nome": "Gestão de Produtos (Product Management)",
+      "descricao": "Ponte entre negócio, design e desenvolvimento, metodologias ágeis e priorização.",
+      "pesos": {"logica": -1, "codigo": -2, "design": 2, "infra": -1, "dados": 1, "comunicacao": 5, "gestao": 5, "obj_lideranca": 5, "obj_usuario": 3}
+    }
+  },
+
+  "regras_combinadas": [
+    {"id": "P01", "tipo": "penalidade", "se": [["codigo", "<=", 2]], "ajustes": {"backend": -25, "frontend": -20, "mobile": -20, "eng_dados": -10, "ciencia_dados": -8},
+     "motivo": "Pouco gosto por escrever código conflita com trilhas centradas em desenvolvimento"},
+    {"id": "P02", "tipo": "penalidade", "se": [["matematica", "<=", 2]], "ajustes": {"ciencia_dados": -25, "eng_dados": -5},
+     "motivo": "Ciência de Dados exige base sólida de matemática e estatística"},
+    {"id": "P03", "tipo": "penalidade", "se": [["design", "<=", 2]], "ajustes": {"frontend": -20, "mobile": -8},
+     "motivo": "Front-end e Mobile dependem de sensibilidade visual e de UX"},
+    {"id": "P04", "tipo": "penalidade", "se": [["infra", "<=", 2]], "ajustes": {"devops": -15, "cloud": -15},
+     "motivo": "DevOps e Cloud exigem conforto com servidores, redes e Linux"},
+    {"id": "P05", "tipo": "penalidade", "se": [["obj_incidentes", "<=", 1]], "ajustes": {"devops": -15, "ciberseguranca": -5},
+     "motivo": "SRE e resposta a incidentes envolvem plantão e trabalho sob pressão"},
+    {"id": "P06", "tipo": "penalidade", "se": [["comunicacao", "<=", 2], ["gestao", "<=", 2]], "ajustes": {"produto": -25},
+     "motivo": "Gestão de Produtos é uma função de comunicação e priorização"},
+    {"id": "P07", "tipo": "penalidade", "se": [["seguranca", "<=", 2]], "ajustes": {"ciberseguranca": -20},
+     "motivo": "Interesse baixo em segurança da informação"},
+    {"id": "P08", "tipo": "penalidade", "se": [["testes", "<=", 2]], "ajustes": {"qa": -20},
+     "motivo": "QA exige perfil detalhista e gosto por testar"},
+    {"id": "P09", "tipo": "penalidade", "se": [["mobile", "<=", 2]], "ajustes": {"mobile": -20},
+     "motivo": "Pouco interesse em aplicativos para celular"},
+    {"id": "P10", "tipo": "penalidade", "se": [["dados", "<=", 2]], "ajustes": {"ciencia_dados": -20, "eng_dados": -20},
+     "motivo": "Trilhas de dados exigem gosto por trabalhar com grandes volumes de dados"},
+    {"id": "P11", "tipo": "penalidade", "se": [["nuvem", "<=", 2]], "ajustes": {"cloud": -20},
+     "motivo": "Cloud Architecture gira em torno de provedores de nuvem"},
+
+    {"id": "S01", "tipo": "sinergia", "se": [["matematica", ">=", 4], ["dados", ">=", 4]], "ajustes": {"ciencia_dados": 8, "eng_dados": -4},
+     "motivo": "Matemática alta somada a dados aponta para Ciência de Dados, e não para engenharia de pipelines"},
+    {"id": "S02", "tipo": "sinergia", "se": [["dados", ">=", 4], ["bancos", ">=", 4], ["matematica", "<=", 3]], "ajustes": {"eng_dados": 8, "ciencia_dados": -4},
+     "motivo": "Dados e bancos com matemática moderada distingue Engenharia de Dados de Ciência de Dados"},
+    {"id": "S03", "tipo": "sinergia", "se": [["infra", ">=", 4], ["automacao", ">=", 4]], "ajustes": {"devops": 8},
+     "motivo": "Infraestrutura com automação é a base de DevOps/SRE"},
+    {"id": "S04", "tipo": "sinergia", "se": [["infra", ">=", 4], ["nuvem", ">=", 4]], "ajustes": {"cloud": 8},
+     "motivo": "Infraestrutura com interesse em nuvem aponta para Cloud Architecture"},
+    {"id": "S05", "tipo": "sinergia", "se": [["design", ">=", 4], ["codigo", ">=", 4]], "ajustes": {"frontend": 6},
+     "motivo": "Design somado a código é o perfil clássico de Front-end"},
+    {"id": "S06", "tipo": "sinergia", "se": [["gestao", ">=", 4], ["comunicacao", ">=", 4]], "ajustes": {"produto": 8},
+     "motivo": "Gestão somada à comunicação com negócio define o perfil de Produto"},
+    {"id": "S07", "tipo": "sinergia", "se": [["seguranca", ">=", 4], ["infra", ">=", 4]], "ajustes": {"ciberseguranca": 6},
+     "motivo": "Segurança com conhecimento de infraestrutura e redes fortalece a trilha de Cibersegurança"},
+    {"id": "S08", "tipo": "sinergia", "se": [["mobile", ">=", 4], ["codigo", ">=", 4]], "ajustes": {"mobile": 6},
+     "motivo": "Interesse em apps somado ao gosto por código aponta para Mobile"},
+    {"id": "S09", "tipo": "sinergia", "se": [["testes", ">=", 4], ["automacao", ">=", 4]], "ajustes": {"qa": 6},
+     "motivo": "Testes somados a automação são o perfil de QA moderno (SDET)"},
+    {"id": "S10", "tipo": "sinergia", "se": [["logica", ">=", 4], ["bancos", ">=", 4]], "ajustes": {"backend": 6},
+     "motivo": "Lógica forte com bancos de dados é o núcleo do Back-end"}
+  ],
+
+  "habilidades": {
+    "git": {"nome": "Git e GitHub", "estudar": "Commits, branches, pull requests e GitHub Flow."},
+    "logica": {"nome": "Lógica de programação e estruturas de dados", "estudar": "Variáveis, laços, funções, listas, dicionários, pilhas, filas e complexidade básica."},
+    "python": {"nome": "Python", "estudar": "Sintaxe, funções, orientação a objetos, ambientes virtuais, pip e leitura de arquivos."},
+    "sql": {"nome": "SQL e bancos relacionais", "estudar": "SELECT, JOIN, GROUP BY, índices, normalização e PostgreSQL ou MySQL."},
+    "apis": {"nome": "APIs REST e HTTP", "estudar": "Verbos HTTP, códigos de status, JSON, autenticação com JWT e documentação com OpenAPI."},
+    "backend_lang": {"nome": "Linguagem de back-end (Java, C#, Go ou Node.js)", "estudar": "Uma linguagem com seu framework web (Spring Boot, ASP.NET, Gin ou Express)."},
+    "html_css": {"nome": "HTML e CSS", "estudar": "HTML semântico, Flexbox, Grid, responsividade e acessibilidade."},
+    "javascript": {"nome": "JavaScript / TypeScript", "estudar": "ES6+, DOM, async/await, fetch e fundamentos de TypeScript."},
+    "framework_front": {"nome": "Framework front-end (React, Vue ou Angular)", "estudar": "Componentes, estado, rotas e consumo de API, começando por React."},
+    "ux": {"nome": "Fundamentos de UX/UI e Figma", "estudar": "Heurísticas de usabilidade, prototipação no Figma e design systems."},
+    "estatistica": {"nome": "Estatística e probabilidade", "estudar": "Distribuições, testes de hipótese, correlação e regressão."},
+    "pandas": {"nome": "Análise de dados com Pandas e visualização", "estudar": "DataFrames, limpeza de dados, agrupamentos e gráficos com Matplotlib ou Plotly."},
+    "ml": {"nome": "Machine Learning", "estudar": "Regressão, classificação, validação cruzada e scikit-learn."},
+    "etl": {"nome": "Pipelines ETL/ELT e orquestração", "estudar": "Extração, transformação e carga com Python e Apache Airflow."},
+    "dw": {"nome": "Modelagem de dados e Data Warehouse", "estudar": "Modelo dimensional (fato e dimensão), Data Lake e Spark."},
+    "linux": {"nome": "Linux e shell script", "estudar": "Terminal, permissões, processos, systemd e Bash."},
+    "redes": {"nome": "Redes de computadores", "estudar": "Modelo TCP/IP, DNS, HTTP/HTTPS, firewalls e sub-redes."},
+    "seguranca_fund": {"nome": "Fundamentos de segurança (OWASP, criptografia)", "estudar": "OWASP Top 10, hashing, criptografia simétrica e assimétrica e TLS."},
+    "pentest": {"nome": "Análise de vulnerabilidades e pentest", "estudar": "Reconhecimento com Nmap, Burp Suite, Metasploit e laboratórios no TryHackMe."},
+    "docker": {"nome": "Docker e contêineres", "estudar": "Dockerfile, imagens, volumes, redes e Docker Compose."},
+    "cicd": {"nome": "CI/CD", "estudar": "Pipelines com GitHub Actions ou GitLab CI: build, teste e deploy."},
+    "iac": {"nome": "Infraestrutura como código (Terraform)", "estudar": "Terraform: providers, state, módulos e variáveis."},
+    "observabilidade": {"nome": "Monitoramento e observabilidade", "estudar": "Métricas com Prometheus e Grafana, logs e alertas, SLI/SLO."},
+    "nuvem_fund": {"nome": "Fundamentos de nuvem (AWS, Azure ou GCP)", "estudar": "Computação, armazenamento, rede (VPC), IAM e modelo de responsabilidade compartilhada."},
+    "arquitetura": {"nome": "Arquitetura de sistemas e escalabilidade", "estudar": "Balanceamento, cache, filas, microsserviços, alta disponibilidade e custo."},
+    "mobile_lang": {"nome": "Dart/Flutter, Kotlin ou Swift", "estudar": "Uma linguagem de mobile com seu framework: Flutter, Android nativo ou iOS nativo."},
+    "mobile_ux": {"nome": "Padrões de interface e ciclo de vida mobile", "estudar": "Material Design, navegação, ciclo de vida de apps e publicação nas lojas."},
+    "teste_tecnicas": {"nome": "Técnicas de teste e casos de teste", "estudar": "Partição de equivalência, valor limite, pirâmide de testes e relato de bugs."},
+    "teste_auto": {"nome": "Automação de testes", "estudar": "Pytest, Selenium, Cypress ou Playwright e testes de API com Postman."},
+    "agil": {"nome": "Metodologias ágeis (Scrum e Kanban)", "estudar": "Cerimônias do Scrum, backlog, user stories e critérios de aceite."},
+    "produto_disc": {"nome": "Discovery de produto, priorização e métricas", "estudar": "Pesquisa com usuários, RICE/MoSCoW, roadmap de produto, OKRs e métricas AARRR."},
+    "comunicacao_doc": {"nome": "Comunicação e documentação técnica", "estudar": "Escrever README, especificações e apresentar decisões para públicos não técnicos."}
+  },
+
+  "niveis_conhecimento": {
+    "0": "Nunca estudei",
+    "1": "Conheço o básico",
+    "2": "Uso com segurança",
+    "3": "Domino"
+  },
+
+  "roadmap": {
+    "backend": {
+      "junior": [
+        {"habilidade": "logica", "nivel": 2, "prioridade": 1},
+        {"habilidade": "git", "nivel": 2, "prioridade": 2},
+        {"habilidade": "backend_lang", "nivel": 2, "prioridade": 3},
+        {"habilidade": "sql", "nivel": 2, "prioridade": 4},
+        {"habilidade": "apis", "nivel": 2, "prioridade": 5},
+        {"habilidade": "docker", "nivel": 1, "prioridade": 6},
+        {"habilidade": "linux", "nivel": 1, "prioridade": 7}
+      ],
+      "certificacoes": [
+        {"nome": "Oracle Certified Foundations Associate (Java)", "nivel": "inicial"},
+        {"nome": "Microsoft Azure Fundamentals (AZ-900)", "nivel": "inicial"},
+        {"nome": "AWS Certified Developer - Associate", "nivel": "intermediario"}
+      ],
+      "projetos": [
+        {"titulo": "API REST de tarefas com autenticação", "descricao": "CRUD com JWT, validação, testes automatizados e documentação OpenAPI.", "nivel": "basico"},
+        {"titulo": "Encurtador de URLs", "descricao": "Serviço com banco relacional, cache e métricas de acesso, publicado com Docker.", "nivel": "basico"},
+        {"titulo": "E-commerce com filas e pagamentos simulados", "descricao": "Serviços separados, mensageria, idempotência e CI/CD no GitHub Actions.", "nivel": "intermediario"}
+      ]
+    },
+    "frontend": {
+      "junior": [
+        {"habilidade": "html_css", "nivel": 2, "prioridade": 1},
+        {"habilidade": "git", "nivel": 2, "prioridade": 2},
+        {"habilidade": "javascript", "nivel": 2, "prioridade": 3},
+        {"habilidade": "framework_front", "nivel": 2, "prioridade": 4},
+        {"habilidade": "ux", "nivel": 1, "prioridade": 5},
+        {"habilidade": "apis", "nivel": 1, "prioridade": 6}
+      ],
+      "certificacoes": [
+        {"nome": "Meta Front-End Developer (Coursera)", "nivel": "inicial"},
+        {"nome": "Google UX Design Certificate", "nivel": "inicial"},
+        {"nome": "freeCodeCamp - Responsive Web Design / JavaScript Algorithms", "nivel": "inicial"}
+      ],
+      "projetos": [
+        {"titulo": "Portfólio pessoal responsivo e acessível", "descricao": "Site com HTML/CSS/JS, nota alta no Lighthouse e publicado no GitHub Pages.", "nivel": "basico"},
+        {"titulo": "Clone de interface (Spotify, Netflix ou Airbnb)", "descricao": "Reprodução fiel de uma tela real consumindo uma API pública.", "nivel": "basico"},
+        {"titulo": "Dashboard em React com design system próprio", "descricao": "Componentes reutilizáveis, Storybook, testes e estado global.", "nivel": "intermediario"}
+      ]
+    },
+    "ciencia_dados": {
+      "junior": [
+        {"habilidade": "python", "nivel": 2, "prioridade": 1},
+        {"habilidade": "estatistica", "nivel": 2, "prioridade": 2},
+        {"habilidade": "pandas", "nivel": 2, "prioridade": 3},
+        {"habilidade": "sql", "nivel": 2, "prioridade": 4},
+        {"habilidade": "ml", "nivel": 1, "prioridade": 5},
+        {"habilidade": "git", "nivel": 1, "prioridade": 6}
+      ],
+      "certificacoes": [
+        {"nome": "Google Data Analytics Certificate", "nivel": "inicial"},
+        {"nome": "IBM Data Science Professional Certificate", "nivel": "inicial"},
+        {"nome": "Microsoft Azure Data Scientist Associate (DP-100)", "nivel": "intermediario"}
+      ],
+      "projetos": [
+        {"titulo": "Análise exploratória de um dataset público (Kaggle)", "descricao": "Notebook com limpeza, gráficos e conclusões de negócio bem escritas.", "nivel": "basico"},
+        {"titulo": "Modelo de previsão de churn ou de preços", "descricao": "Pipeline com validação cruzada, comparação de modelos e métricas explicadas.", "nivel": "basico"},
+        {"titulo": "Modelo em produção com API e monitoramento", "descricao": "Modelo servido por API, versionado com MLflow e com detecção de drift.", "nivel": "intermediario"}
+      ]
+    },
+    "eng_dados": {
+      "junior": [
+        {"habilidade": "sql", "nivel": 2, "prioridade": 1},
+        {"habilidade": "python", "nivel": 2, "prioridade": 2},
+        {"habilidade": "git", "nivel": 1, "prioridade": 3},
+        {"habilidade": "linux", "nivel": 1, "prioridade": 4},
+        {"habilidade": "etl", "nivel": 2, "prioridade": 5},
+        {"habilidade": "dw", "nivel": 1, "prioridade": 6},
+        {"habilidade": "docker", "nivel": 1, "prioridade": 7}
+      ],
+      "certificacoes": [
+        {"nome": "Databricks Certified Data Engineer Associate", "nivel": "inicial"},
+        {"nome": "Google Cloud Professional Data Engineer", "nivel": "intermediario"},
+        {"nome": "AWS Certified Data Engineer - Associate", "nivel": "intermediario"}
+      ],
+      "projetos": [
+        {"titulo": "Pipeline ETL de uma API pública para um banco relacional", "descricao": "Extração agendada, transformação com Python e carga em PostgreSQL.", "nivel": "basico"},
+        {"titulo": "Data Warehouse dimensional com dbt", "descricao": "Modelo fato e dimensão, testes de qualidade e documentação gerada.", "nivel": "basico"},
+        {"titulo": "Data Lake com Airflow e Spark na nuvem", "descricao": "Ingestão em lote e em streaming, particionamento e orquestração completa.", "nivel": "intermediario"}
+      ]
+    },
+    "ciberseguranca": {
+      "junior": [
+        {"habilidade": "redes", "nivel": 2, "prioridade": 1},
+        {"habilidade": "linux", "nivel": 2, "prioridade": 2},
+        {"habilidade": "seguranca_fund", "nivel": 2, "prioridade": 3},
+        {"habilidade": "python", "nivel": 1, "prioridade": 4},
+        {"habilidade": "pentest", "nivel": 1, "prioridade": 5},
+        {"habilidade": "git", "nivel": 1, "prioridade": 6}
+      ],
+      "certificacoes": [
+        {"nome": "CompTIA Security+", "nivel": "inicial"},
+        {"nome": "eJPT (eLearnSecurity Junior Penetration Tester)", "nivel": "inicial"},
+        {"nome": "CEH ou OSCP", "nivel": "intermediario"}
+      ],
+      "projetos": [
+        {"titulo": "Writeups de laboratórios (TryHackMe e Hack The Box)", "descricao": "Relatos técnicos publicados no GitHub explicando cada etapa da exploração.", "nivel": "basico"},
+        {"titulo": "Scanner de portas e de cabeçalhos HTTP em Python", "descricao": "Ferramenta de linha de comando com relatório de achados.", "nivel": "basico"},
+        {"titulo": "Laboratório caseiro de SOC com SIEM", "descricao": "Wazuh ou Elastic coletando logs, com regras de detecção e resposta a incidente.", "nivel": "intermediario"}
+      ]
+    },
+    "devops": {
+      "junior": [
+        {"habilidade": "linux", "nivel": 2, "prioridade": 1},
+        {"habilidade": "git", "nivel": 2, "prioridade": 2},
+        {"habilidade": "redes", "nivel": 1, "prioridade": 3},
+        {"habilidade": "docker", "nivel": 2, "prioridade": 4},
+        {"habilidade": "cicd", "nivel": 2, "prioridade": 5},
+        {"habilidade": "python", "nivel": 1, "prioridade": 6},
+        {"habilidade": "observabilidade", "nivel": 1, "prioridade": 7},
+        {"habilidade": "iac", "nivel": 1, "prioridade": 8}
+      ],
+      "certificacoes": [
+        {"nome": "Linux Foundation Certified IT Associate (LFCA)", "nivel": "inicial"},
+        {"nome": "HashiCorp Terraform Associate", "nivel": "intermediario"},
+        {"nome": "CKA (Certified Kubernetes Administrator)", "nivel": "intermediario"}
+      ],
+      "projetos": [
+        {"titulo": "Pipeline CI/CD completo para uma aplicação conteinerizada", "descricao": "GitHub Actions executando build, testes e deploy automático.", "nivel": "basico"},
+        {"titulo": "Stack de monitoramento com Prometheus e Grafana", "descricao": "Métricas, dashboards e alertas de uma aplicação de exemplo.", "nivel": "basico"},
+        {"titulo": "Cluster Kubernetes provisionado com Terraform", "descricao": "Infraestrutura como código, deploy com Helm e GitOps.", "nivel": "intermediario"}
+      ]
+    },
+    "cloud": {
+      "junior": [
+        {"habilidade": "redes", "nivel": 2, "prioridade": 1},
+        {"habilidade": "linux", "nivel": 2, "prioridade": 2},
+        {"habilidade": "nuvem_fund", "nivel": 2, "prioridade": 3},
+        {"habilidade": "iac", "nivel": 1, "prioridade": 4},
+        {"habilidade": "arquitetura", "nivel": 1, "prioridade": 5},
+        {"habilidade": "docker", "nivel": 1, "prioridade": 6},
+        {"habilidade": "git", "nivel": 1, "prioridade": 7}
+      ],
+      "certificacoes": [
+        {"nome": "AWS Certified Cloud Practitioner", "nivel": "inicial"},
+        {"nome": "AWS Certified Solutions Architect - Associate", "nivel": "intermediario"},
+        {"nome": "Microsoft Azure Administrator (AZ-104)", "nivel": "intermediario"}
+      ],
+      "projetos": [
+        {"titulo": "Site estático com CDN, HTTPS e domínio próprio", "descricao": "Hospedagem em S3/CloudFront (ou equivalente) com custo documentado.", "nivel": "basico"},
+        {"titulo": "Aplicação de três camadas em VPC com Terraform", "descricao": "Balanceador, instâncias em múltiplas zonas e banco gerenciado.", "nivel": "basico"},
+        {"titulo": "Migração de uma aplicação para a nuvem com análise de custo", "descricao": "Diagrama de arquitetura, plano de migração, alta disponibilidade e FinOps.", "nivel": "intermediario"}
+      ]
+    },
+    "mobile": {
+      "junior": [
+        {"habilidade": "logica", "nivel": 2, "prioridade": 1},
+        {"habilidade": "git", "nivel": 2, "prioridade": 2},
+        {"habilidade": "mobile_lang", "nivel": 2, "prioridade": 3},
+        {"habilidade": "mobile_ux", "nivel": 2, "prioridade": 4},
+        {"habilidade": "apis", "nivel": 1, "prioridade": 5},
+        {"habilidade": "ux", "nivel": 1, "prioridade": 6}
+      ],
+      "certificacoes": [
+        {"nome": "Associate Android Developer (Google)", "nivel": "inicial"},
+        {"nome": "Flutter Certified Application Developer", "nivel": "inicial"},
+        {"nome": "Meta Android / iOS Developer (Coursera)", "nivel": "intermediario"}
+      ],
+      "projetos": [
+        {"titulo": "App de lista de tarefas com armazenamento local", "descricao": "Navegação, persistência offline e testes de widget.", "nivel": "basico"},
+        {"titulo": "App que consome uma API pública", "descricao": "Listagem, detalhe, favoritos, estados de carregamento e erro.", "nivel": "basico"},
+        {"titulo": "App publicado nas lojas com autenticação e notificações push", "descricao": "Firebase, CI para build e distribuição e crash reporting.", "nivel": "intermediario"}
+      ]
+    },
+    "qa": {
+      "junior": [
+        {"habilidade": "teste_tecnicas", "nivel": 2, "prioridade": 1},
+        {"habilidade": "agil", "nivel": 1, "prioridade": 2},
+        {"habilidade": "sql", "nivel": 1, "prioridade": 3},
+        {"habilidade": "git", "nivel": 1, "prioridade": 4},
+        {"habilidade": "logica", "nivel": 2, "prioridade": 5},
+        {"habilidade": "teste_auto", "nivel": 2, "prioridade": 6},
+        {"habilidade": "apis", "nivel": 1, "prioridade": 7}
+      ],
+      "certificacoes": [
+        {"nome": "CTFL - ISTQB Foundation Level (CBTS)", "nivel": "inicial"},
+        {"nome": "ISTQB Test Automation Engineer", "nivel": "intermediario"},
+        {"nome": "Certified Agile Tester", "nivel": "intermediario"}
+      ],
+      "projetos": [
+        {"titulo": "Plano e casos de teste de um sistema real", "descricao": "Documentação de testes com cenários, evidências e relatório de bugs.", "nivel": "basico"},
+        {"titulo": "Suíte de testes E2E com Cypress ou Playwright", "descricao": "Testes automatizados de um site, rodando no GitHub Actions.", "nivel": "basico"},
+        {"titulo": "Framework de testes de API com relatórios e testes de carga", "descricao": "Pytest ou RestAssured com Allure e cenários de performance em k6.", "nivel": "intermediario"}
+      ]
+    },
+    "produto": {
+      "junior": [
+        {"habilidade": "agil", "nivel": 2, "prioridade": 1},
+        {"habilidade": "produto_disc", "nivel": 2, "prioridade": 2},
+        {"habilidade": "comunicacao_doc", "nivel": 2, "prioridade": 3},
+        {"habilidade": "ux", "nivel": 1, "prioridade": 4},
+        {"habilidade": "sql", "nivel": 1, "prioridade": 5}
+      ],
+      "certificacoes": [
+        {"nome": "Professional Scrum Product Owner I (PSPO I)", "nivel": "inicial"},
+        {"nome": "Certified Scrum Product Owner (CSPO)", "nivel": "inicial"},
+        {"nome": "Pragmatic Institute Product Management", "nivel": "intermediario"}
+      ],
+      "projetos": [
+        {"titulo": "Product Requirements Document (PRD) de um app real", "descricao": "Problema, personas, user stories, critérios de aceite e métricas de sucesso.", "nivel": "basico"},
+        {"titulo": "Case de discovery com entrevistas e priorização RICE", "descricao": "Pesquisa com usuários, backlog priorizado e roadmap publicado no GitHub.", "nivel": "basico"},
+        {"titulo": "Dashboard de métricas de produto (AARRR) com SQL", "descricao": "Funil, retenção e recomendações baseadas em dados.", "nivel": "intermediario"}
+      ]
+    }
+  }
+}

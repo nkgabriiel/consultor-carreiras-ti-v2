@@ -1,4 +1,4 @@
-experta==1.9.4
-frozendict==1.2
-streamlit>=1.42
+streamlit>=1.50
+pandas>=2.2
+plotly>=5.24
 pytest>=8
